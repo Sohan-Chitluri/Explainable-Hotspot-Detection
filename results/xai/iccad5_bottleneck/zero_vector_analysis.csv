@@ -1,0 +1,15 @@
+checkpoint,grouping,group,n,zero_vector_count,zero_vector_pct
+OLD,by_label,HS,41,40,97.561
+OLD,by_label,NHS,19327,912,4.719
+OLD,by_case,FN,1,0,0.0
+OLD,by_case,FP,1243,912,73.371
+OLD,by_case,TN,18084,0,0.0
+OLD,by_case,TP,40,40,100.0
+OLD,overall,ALL,19368,952,4.915
+NEW,by_label,HS,41,32,78.049
+NEW,by_label,NHS,19327,319,1.651
+NEW,by_case,FN,3,0,0.0
+NEW,by_case,FP,413,319,77.24
+NEW,by_case,TN,18914,0,0.0
+NEW,by_case,TP,38,32,84.211
+NEW,overall,ALL,19368,351,1.812

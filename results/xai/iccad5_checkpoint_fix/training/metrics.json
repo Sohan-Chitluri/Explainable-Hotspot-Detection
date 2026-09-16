@@ -1,0 +1,181 @@
+{
+  "benchmarks": [
+    "iccad5"
+  ],
+  "xai_average_balanced_accuracy": 0.9649252215086439,
+  "baseline_average_balanced_accuracy": 0.9821909700444342,
+  "xai_average_f1": 0.1582150101419878,
+  "baseline_average_f1": 0.26845637583892623,
+  "per_benchmark_xai": {
+    "iccad5": {
+      "confusion_matrix": {
+        "tp": 39,
+        "tn": 18914,
+        "fp": 413,
+        "fn": 2
+      },
+      "precision": 0.08628318584070796,
+      "recall_sensitivity": 0.9512195121951219,
+      "specificity": 0.9786309308221659,
+      "f1_score": 0.1582150101419878,
+      "balanced_accuracy": 0.9649252215086439,
+      "accuracy": 0.9785729037587774,
+      "positive_label": 0,
+      "class_indices": {
+        "test_hs": 0,
+        "test_nhs": 1
+      },
+      "n_samples": 19368,
+      "n_predicted_positive": 452,
+      "benchmark": "iccad5",
+      "model_type": "xai_cnn",
+      "epochs": 10,
+      "batch_size": 32,
+      "optimizer": "nadam",
+      "loss": "binary_crossentropy",
+      "image_size": [
+        224,
+        224
+      ],
+      "final_conv_layer": "conv_final_2",
+      "final_conv_shape": [
+        28,
+        28,
+        32
+      ],
+      "param_count": 128321,
+      "latency": {
+        "ms_per_sample": 9.459,
+        "fps": 105.7,
+        "eval_samples": 640
+      },
+      "class_weights": {
+        "0": 52.73076923076923,
+        "1": 0.5047864506627393
+      },
+      "dataset_counts": {
+        "train_hs": 26,
+        "train_nhs": 2716,
+        "test_hs": 41,
+        "test_nhs": 19327,
+        "total_train": 2742,
+        "total_val": 19368
+      },
+      "seed": 42,
+      "history_val_balanced_accuracy": [
+        0.49989651782480465,
+        0.49800796812749004,
+        0.7327522346470943,
+        0.8727844403191793,
+        0.9546905819862772,
+        0.9438205366686564,
+        0.6913448518248829,
+        0.9237607694025923,
+        0.9649252215086439,
+        0.8473978649860487
+      ],
+      "best_history_val_balanced_accuracy": 0.9649252215086439,
+      "checkpoint_selection": {
+        "criterion": "best validation balanced accuracy (0.5*(sensitivity+specificity), from val_true_positives/val_true_negatives/val_false_positives/val_false_negatives; see BestBalancedAccuracyCheckpoint in src/metrics.py)",
+        "selected_epoch": 8,
+        "selected_epoch_val_balanced_accuracy": 0.9649252215086439
+      }
+    }
+  },
+  "per_benchmark_baseline": {
+    "iccad1": {
+      "balanced_accuracy": 0.885113205869948,
+      "precision": 0.18042071197411003,
+      "recall_sensitivity": 0.9867256637168141,
+      "specificity": 0.7835007480230819,
+      "f1_score": 0.30506155950752395,
+      "accuracy": 0.7928644240570846,
+      "confusion_matrix": {
+        "tp": 223,
+        "tn": 3666,
+        "fp": 1013,
+        "fn": 3
+      },
+      "epochs": 5,
+      "device_note": "iccad1-2 CPU; iccad3-5 GPU"
+    },
+    "iccad2": {
+      "balanced_accuracy": 0.9892895714778335,
+      "precision": 0.5119418483904465,
+      "recall_sensitivity": 0.9899598393574297,
+      "specificity": 0.9886193035982372,
+      "f1_score": 0.674880219028063,
+      "accuracy": 0.9886352761029764,
+      "confusion_matrix": {
+        "tp": 493,
+        "tn": 40828,
+        "fp": 470,
+        "fn": 5
+      },
+      "epochs": 5,
+      "device_note": "iccad1-2 CPU; iccad3-5 GPU"
+    },
+    "iccad3": {
+      "balanced_accuracy": 0.9672189041183017,
+      "precision": 0.47069792221630263,
+      "recall_sensitivity": 0.9773230088495575,
+      "specificity": 0.9571147993870459,
+      "f1_score": 0.6353829557713053,
+      "accuracy": 0.9578737458715024,
+      "confusion_matrix": {
+        "tp": 1767,
+        "tn": 44346,
+        "fp": 1987,
+        "fn": 41
+      },
+      "epochs": 10,
+      "device_note": "iccad1-2 CPU; iccad3-5 GPU"
+    },
+    "iccad4": {
+      "balanced_accuracy": 0.8577849705821388,
+      "precision": 0.671957671957672,
+      "recall_sensitivity": 0.7175141242937854,
+      "specificity": 0.9980558168704923,
+      "f1_score": 0.6939890710382514,
+      "accuracy": 0.9965073128137961,
+      "confusion_matrix": {
+        "tp": 127,
+        "tn": 31828,
+        "fp": 62,
+        "fn": 50
+      },
+      "epochs": 10,
+      "device_note": "iccad1-2 CPU; iccad3-5 GPU"
+    },
+    "iccad5": {
+      "balanced_accuracy": 0.9821909700444342,
+      "precision": 0.1556420233463035,
+      "recall_sensitivity": 0.975609756097561,
+      "specificity": 0.9887721839913075,
+      "f1_score": 0.26845637583892623,
+      "accuracy": 0.9887443205287072,
+      "confusion_matrix": {
+        "tp": 40,
+        "tn": 19110,
+        "fp": 217,
+        "fn": 1
+      },
+      "epochs": 10,
+      "device_note": "iccad1-2 CPU; iccad3-5 GPU"
+    }
+  },
+  "comparison_table": {
+    "iccad5": {
+      "baseline_bal_acc": 0.9821909700444342,
+      "xai_bal_acc": 0.9649252215086439,
+      "baseline_f1": 0.26845637583892623,
+      "xai_f1": 0.1582150101419878,
+      "baseline_recall": 0.975609756097561,
+      "xai_recall": 0.9512195121951219,
+      "baseline_specificity": 0.9887721839913075,
+      "xai_specificity": 0.9786309308221659,
+      "xai_param_count": 128321,
+      "xai_latency_ms": 9.459
+    }
+  }
+}

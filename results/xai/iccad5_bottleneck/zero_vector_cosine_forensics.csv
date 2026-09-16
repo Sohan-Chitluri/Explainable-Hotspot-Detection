@@ -1,0 +1,5 @@
+checkpoint,group,mean_pairwise_cosine_conv_final_2,mean_norm
+OLD,zero_vector_HS (n=20),0.8079,490.396
+OLD,nonzero_vector_NHS (n=20),0.5286,312.747
+NEW,zero_vector_HS (n=20),0.8338,466.788
+NEW,nonzero_vector_NHS (n=20),0.706,306.766

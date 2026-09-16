@@ -30,6 +30,7 @@ import tensorflow as tf
 
 from src.data import data_extractor, dataset_analysis
 from src.metrics import (
+    BestBalancedAccuracyCheckpoint,
     binary_metrics,
     plot_balanced_accuracy_curves,
     save_confusion_matrix_png,
@@ -189,12 +190,17 @@ def train_one_benchmark(
 
     model.compile(optimizer=OPTIMIZER, loss=LOSS, metrics=TRAIN_METRICS)
 
-    # Train with class weights
+    # Train with class weights. BestBalancedAccuracyCheckpoint restores the best-epoch
+    # weights (by validation balanced accuracy) into `model` at the end of training, so
+    # the model.save() below persists the best epoch instead of the final epoch --
+    # see docs/ICCAD5_CHECKPOINT_FIX.md for why this matters.
+    best_ckpt_cb = BestBalancedAccuracyCheckpoint()
     history = model.fit(
         train_data_gen,
         epochs=epochs,
         validation_data=val_data_gen,
         class_weight=class_weights,
+        callbacks=[best_ckpt_cb],
     )
 
     bench_dir = results_dir / f"iccad{benchmark}"
@@ -229,6 +235,13 @@ def train_one_benchmark(
             "seed": seed,
             "history_val_balanced_accuracy": bal_val,
             "best_history_val_balanced_accuracy": float(max(bal_val)) if bal_val else None,
+            "checkpoint_selection": {
+                "criterion": "best validation balanced accuracy (0.5*(sensitivity+specificity), "
+                             "from val_true_positives/val_true_negatives/val_false_positives/"
+                             "val_false_negatives; see BestBalancedAccuracyCheckpoint in src/metrics.py)",
+                "selected_epoch": best_ckpt_cb.best_epoch,
+                "selected_epoch_val_balanced_accuracy": best_ckpt_cb.best_value,
+            },
         }
     )
 

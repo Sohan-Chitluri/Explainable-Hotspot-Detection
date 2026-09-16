@@ -1,0 +1,74 @@
+{
+  "confusion_matrix": {
+    "tp": 39,
+    "tn": 18914,
+    "fp": 413,
+    "fn": 2
+  },
+  "precision": 0.08628318584070796,
+  "recall_sensitivity": 0.9512195121951219,
+  "specificity": 0.9786309308221659,
+  "f1_score": 0.1582150101419878,
+  "balanced_accuracy": 0.9649252215086439,
+  "accuracy": 0.9785729037587774,
+  "positive_label": 0,
+  "class_indices": {
+    "test_hs": 0,
+    "test_nhs": 1
+  },
+  "n_samples": 19368,
+  "n_predicted_positive": 452,
+  "benchmark": "iccad5",
+  "model_type": "xai_cnn",
+  "epochs": 10,
+  "batch_size": 32,
+  "optimizer": "nadam",
+  "loss": "binary_crossentropy",
+  "image_size": [
+    224,
+    224
+  ],
+  "final_conv_layer": "conv_final_2",
+  "final_conv_shape": [
+    28,
+    28,
+    32
+  ],
+  "param_count": 128321,
+  "latency": {
+    "ms_per_sample": 9.459,
+    "fps": 105.7,
+    "eval_samples": 640
+  },
+  "class_weights": {
+    "0": 52.73076923076923,
+    "1": 0.5047864506627393
+  },
+  "dataset_counts": {
+    "train_hs": 26,
+    "train_nhs": 2716,
+    "test_hs": 41,
+    "test_nhs": 19327,
+    "total_train": 2742,
+    "total_val": 19368
+  },
+  "seed": 42,
+  "history_val_balanced_accuracy": [
+    0.49989651782480465,
+    0.49800796812749004,
+    0.7327522346470943,
+    0.8727844403191793,
+    0.9546905819862772,
+    0.9438205366686564,
+    0.6913448518248829,
+    0.9237607694025923,
+    0.9649252215086439,
+    0.8473978649860487
+  ],
+  "best_history_val_balanced_accuracy": 0.9649252215086439,
+  "checkpoint_selection": {
+    "criterion": "best validation balanced accuracy (0.5*(sensitivity+specificity), from val_true_positives/val_true_negatives/val_false_positives/val_false_negatives; see BestBalancedAccuracyCheckpoint in src/metrics.py)",
+    "selected_epoch": 8,
+    "selected_epoch_val_balanced_accuracy": 0.9649252215086439
+  }
+}
