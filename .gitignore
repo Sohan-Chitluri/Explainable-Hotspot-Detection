@@ -1,0 +1,36 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Dataset (large; obtain separately from Google Drive link)
+iccad-official/
+iccad_official.rar
+iccad_inference_test/
+iccad_inference_test.zip
+
+# Scratch scripts and temporary files
+scratch/
+tmp/
+*.tmp
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Logs and runtime caches
+*.log
+.cache/

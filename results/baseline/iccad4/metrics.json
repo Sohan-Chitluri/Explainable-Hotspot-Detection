@@ -1,0 +1,52 @@
+{
+  "confusion_matrix": {
+    "tp": 127,
+    "tn": 31828,
+    "fp": 62,
+    "fn": 50
+  },
+  "precision": 0.671957671957672,
+  "recall_sensitivity": 0.7175141242937854,
+  "specificity": 0.9980558168704923,
+  "f1_score": 0.6939890710382514,
+  "balanced_accuracy": 0.8577849705821388,
+  "accuracy": 0.9965073128137961,
+  "positive_label": 0,
+  "class_indices": {
+    "test_hs": 0,
+    "test_nhs": 1
+  },
+  "n_samples": 32067,
+  "n_predicted_positive": 189,
+  "benchmark": "iccad4",
+  "epochs": 10,
+  "batch_size": 32,
+  "optimizer": "nadam",
+  "loss": "binary_crossentropy",
+  "image_size": [
+    224,
+    224
+  ],
+  "rescale": "1/255",
+  "dataset_counts": {
+    "train_hs": 95,
+    "train_nhs": 4452,
+    "test_hs": 177,
+    "test_nhs": 31890,
+    "total_train": 4547,
+    "total_val": 32067
+  },
+  "history_val_balanced_accuracy": [
+    0.5028091798608565,
+    0.5728348507315932,
+    0.5478187732193823,
+    0.584338111410516,
+    0.8617413673060468,
+    0.7480701670466806,
+    0.7735095747564456,
+    0.9430404302926905,
+    0.7897061402809445,
+    0.8577849705821388
+  ],
+  "best_history_val_balanced_accuracy": 0.9430404302926905
+}

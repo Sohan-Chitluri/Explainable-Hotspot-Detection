@@ -1,0 +1,52 @@
+{
+  "confusion_matrix": {
+    "tp": 40,
+    "tn": 19110,
+    "fp": 217,
+    "fn": 1
+  },
+  "precision": 0.1556420233463035,
+  "recall_sensitivity": 0.975609756097561,
+  "specificity": 0.9887721839913075,
+  "f1_score": 0.26845637583892623,
+  "balanced_accuracy": 0.9821909700444342,
+  "accuracy": 0.9887443205287072,
+  "positive_label": 0,
+  "class_indices": {
+    "test_hs": 0,
+    "test_nhs": 1
+  },
+  "n_samples": 19368,
+  "n_predicted_positive": 257,
+  "benchmark": "iccad5",
+  "epochs": 10,
+  "batch_size": 32,
+  "optimizer": "nadam",
+  "loss": "binary_crossentropy",
+  "image_size": [
+    224,
+    224
+  ],
+  "rescale": "1/255",
+  "dataset_counts": {
+    "train_hs": 26,
+    "train_nhs": 2716,
+    "test_hs": 41,
+    "test_nhs": 19327,
+    "total_train": 2742,
+    "total_val": 19368
+  },
+  "history_val_balanced_accuracy": [
+    0.5,
+    0.5363266604156702,
+    0.5,
+    0.9013783320944919,
+    0.8165816303995295,
+    0.9138062889399008,
+    0.9746784165208031,
+    0.9859421988952647,
+    0.9747301576084006,
+    0.9821909700444342
+  ],
+  "best_history_val_balanced_accuracy": 0.9859421988952647
+}

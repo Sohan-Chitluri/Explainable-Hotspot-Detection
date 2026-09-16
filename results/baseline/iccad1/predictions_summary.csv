@@ -1,0 +1,5 @@
+metric,value
+n_samples,4905
+n_pred_hs,1236
+balanced_accuracy,0.885113205869948
+f1_score,0.30506155950752395
