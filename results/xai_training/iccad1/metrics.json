@@ -1,0 +1,64 @@
+{
+  "confusion_matrix": {
+    "tp": 224,
+    "tn": 3724,
+    "fp": 955,
+    "fn": 2
+  },
+  "precision": 0.18999151823579305,
+  "recall_sensitivity": 0.9911504424778761,
+  "specificity": 0.7958965590938235,
+  "f1_score": 0.31886120996441286,
+  "balanced_accuracy": 0.8935235007858497,
+  "accuracy": 0.8048929663608563,
+  "positive_label": 0,
+  "class_indices": {
+    "test_hs": 0,
+    "test_nhs": 1
+  },
+  "n_samples": 4905,
+  "n_predicted_positive": 1179,
+  "benchmark": "iccad1",
+  "model_type": "xai_cnn",
+  "epochs": 5,
+  "batch_size": 32,
+  "optimizer": "nadam",
+  "loss": "binary_crossentropy",
+  "image_size": [
+    224,
+    224
+  ],
+  "final_conv_layer": "conv_final_2",
+  "final_conv_shape": [
+    28,
+    28,
+    32
+  ],
+  "param_count": 128321,
+  "latency": {
+    "ms_per_sample": 4.01,
+    "fps": 249.4,
+    "eval_samples": 640
+  },
+  "class_weights": {
+    "0": 2.217171717171717,
+    "1": 0.6455882352941177
+  },
+  "dataset_counts": {
+    "train_hs": 99,
+    "train_nhs": 340,
+    "test_hs": 226,
+    "test_nhs": 4679,
+    "total_train": 439,
+    "total_val": 4905
+  },
+  "seed": 42,
+  "history_val_balanced_accuracy": [
+    0.8509296858303056,
+    0.8840564223124598,
+    0.890072286832335,
+    0.8922411755026696,
+    0.8935235007858497
+  ],
+  "best_history_val_balanced_accuracy": 0.8935235007858497
+}

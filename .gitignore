@@ -34,3 +34,4 @@ tmp/
 # Logs and runtime caches
 *.log
 .cache/
+.system_generated/

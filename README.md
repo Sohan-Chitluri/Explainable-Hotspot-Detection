@@ -5,94 +5,105 @@
 [![CUDA 12.2](https://img.shields.io/badge/CUDA-12.2-76B900.svg?logo=nvidia&logoColor=white)](https://developer.nvidia.com/cuda-toolkit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An Explainable AI (XAI) framework for **Lithography Hotspot Detection** across ICCAD-12 benchmarks 1–5, utilizing **Gradient-weighted Class Activation Mapping (Grad-CAM)** to localize and interpret spatial layout features driving Hotspot (HS) and Non-Hotspot (NHS) classifications.
+An end-to-end Explainable Artificial Intelligence (XAI) framework for **Lithography Hotspot Detection** across ICCAD-12 benchmarks 1–5. This repository couples high-resolution convolutional neural architectures with multi-method visual and quantitative attribution techniques—including **Vanilla Grad-CAM**, **Grad-CAM++**, and **LayerCAM** across multi-layer resolution hierarchies.
 
 ---
 
 ## 🎯 Research Context & Objectives
 
 - **Core Research Question**:  
-  *Can explainable-AI techniques identify the layout regions or features that contribute most strongly to hotspot classification?*
-- **Research Focus / Novelty**:  
-  Applying spatial XAI attribution methods (such as **Grad-CAM**, with future extensions to occlusion analysis, saliency mapping, and feature attribution) to deep convolutional neural networks trained for VLSI layout printability verification.
-- **Minimum Expected Investigation**:  
-  Provide high-resolution visual explanations for representative **True Positive (HS)**, **True Negative (NHS)**, **False Positive (over-prediction)**, and **False Negative (missed defect)** test cases, and assess whether the highlighted spatial regions correspond to technically meaningful geometric structures (e.g., dense pitch lines, line-end pullback, pinching, and bridging risks).
+  *Can explainable AI techniques localize the critical spatial layout topologies (sub-wavelength pitch pinching, line-end pullbacks, corner rounding, and dense 2D patterns) driving hotspot classifications in deep neural networks?*
+- **Explainability Suite**:  
+  1. **Vanilla Grad-CAM** (Global Average Pooled gradient weighting)
+  2. **Grad-CAM++** (Pixel-weighted higher-order derivatives for multi-instance localization)
+  3. **LayerCAM** (Fine-grained pixel-wise gradient activation preserving layout edges)
+  4. **Multi-Layer Resolution Hierarchy** (LayerCAM evaluated at Early $112\times 112$, Intermediate $56\times 56$, and Final $28\times 28$ convolutional representations)
+- **Quantitative Spatial Diagnostics**:  
+  Attribution center-of-mass centroids, spatial spread radii, high-activation area fractions ($>0.25, >0.50, >0.75$), connected component counts, and outer perimeter boundary concentration.
 
 ---
 
-## 🔬 Key Findings & Technical Highlights
+## 🔬 Key Technical Innovations
 
-1. **Pre-Sigmoid Logit Grad-CAM Formulation**:  
-   Standard post-sigmoid gradient backpropagation causes severe gradient vanishing on high-confidence layout predictions ($p \approx 1.0$ or $p \approx 0.0$) due to derivative saturation $\sigma'(z) \to 0$. By formulating Grad-CAM w.r.t the **pre-sigmoid logit score** ($y^{\text{NHS}} = +z$, $y^{\text{HS}} = -z$), we obtain well-scaled, non-saturating attribution heatmaps across all benchmarks.
-2. **Attribution Localization**:  
-   - **True Positives (HS)**: Strongly focal activations centered on 2D pattern clusters, tight spacing margins, and critical line ends susceptible to Optical Proximity Effects (OPE).
-   - **True Negatives (NHS)**: Dispersed attribution across regular, periodic Manhattan tracks.
-   - **False Positives (FP)**: Over-attribution on complex layout jogs that mimic defect topologies despite passing DRC rules.
-   - **False Negatives (FN)**: Misses occur primarily when sub-wavelength pinching flaws are smoothed out by coarse pooling stages in the deep network.
+1. **Pre-Sigmoid Logit Formulation**:  
+   Standard post-sigmoid backpropagation suffers from severe gradient vanishing on high-confidence layout predictions ($p \approx 1.0$ or $p \approx 0.0$) due to derivative saturation $\sigma'(z) \to 0$. Formulating attribution gradients with respect to the **pre-sigmoid logit score** ($y^{\text{NHS}} = +z$, $y^{\text{HS}} = -z$) preserves high gradient signal fidelity across all confidence regimes.
+2. **XAI-Ready Architecture (`model_xai.py`)**:  
+   Unlike baseline models that collapse layout features to an overly coarse $15\times 15$ activation grid via aggressive pooling and valid padding, the XAI-Ready CNN uses `'same'` padding and modular $2\times 2$ pooling stages to maintain a rich **$28\times 28$ final convolutional feature map** with 128k parameters.
+3. **Multi-Target Comparative Attribution**:  
+   Both predicted-class (`pred_*`) and ground-truth-class (`true_*`) heatmaps and overlays are generated to inspect *why* false positives and false negatives occur.
 
 ---
 
-## 📊 Baseline CNN Performance (ICCAD-12)
+## 📊 Benchmark Model Performance (ICCAD-12)
 
-The baseline model is a lightweight custom Sequential CNN (~12.8k parameters, 2 convolutional blocks with ELU activations, Batch Normalization, and Max Pooling) trained across ICCAD-12 benchmarks:
+Comparison between the Baseline CNN and the XAI-Ready CNN across test sets:
 
-| Benchmark | Balanced Acc. | Precision | Recall (HS) | Specificity | F1 Score | Analyzed Grad-CAM Samples |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| `iccad1` | **88.51%** | 0.1804 | 0.9867 | 0.7835 | 0.3051 | 15 samples |
-| `iccad2` | **98.93%** | 0.5119 | 0.9900 | 0.9886 | 0.6749 | 16 samples |
-| `iccad3` | **96.72%** | 0.4707 | 0.9773 | 0.9571 | 0.6354 | 16 samples |
-| `iccad4` | **85.78%** | 0.6720 | 0.7175 | 0.9981 | 0.6940 | 16 samples |
-| `iccad5` | **98.22%** | 0.1556 | 0.9756 | 0.9888 | 0.2685 | 13 samples |
-| **Average** | **93.63%** | — | — | — | — | **76 samples** |
+| Benchmark | Test Images | XAI Balanced Acc. | Baseline Balanced Acc. | XAI Recall (HS) | XAI Specificity | XAI F1 Score | XAI Inference Latency |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **iccad1** | 4,905 | **89.35%** | 88.51% | **99.12%** | 79.59% | 0.3189 | 4.01 ms |
+| **iccad2** | 41,796 | **93.14%** | 98.93% | 86.75% | **99.54%** | **0.7714** | 3.96 ms |
+| **iccad3** | 48,141 | **96.41%** | 96.72% | 97.07% | 95.74% | 0.6340 | 3.99 ms |
+| **iccad4** | 32,067 | **94.30%** | 85.78% | **91.53%** | 97.08% | 0.2549 | 4.07 ms |
+| **iccad5** | 19,368 | **95.01%** | 98.22% | **97.56%** | 92.47% | 0.0520 | 4.03 ms |
+| **Average** | **146,277** | **93.64%** | 93.63% | **94.41%** | **92.88%** | **0.4062** | **4.01 ms** |
 
 ---
 
 ## 🖼️ Visual Explanation Gallery
 
-### Category Summary Figures
+Multi-method comparison sheets for representative True Positive (TP), True Negative (TN), False Positive (FP), and False Negative (FN) test samples:
 
-| Category | Description | Visual Summary |
+| Confusion Category | Description | Visual Summary (Original \| Grad-CAM \| Grad-CAM++ \| LayerCAM) |
 |:---|:---|:---:|
-| **True Positive (TP)** | Actual Hotspot correctly identified with high confidence | ![Summary TP](results/gradcam/summary_TP.png) |
-| **True Negative (TN)** | Actual Non-Hotspot correctly identified | ![Summary TN](results/gradcam/summary_TN.png) |
-| **False Positive (FP)** | Non-Hotspot misclassified as Hotspot (false alarm) | ![Summary FP](results/gradcam/summary_FP.png) |
-| **False Negative (FN)** | Hotspot misclassified as Non-Hotspot (missed defect) | ![Summary FN](results/gradcam/summary_FN.png) |
+| **True Positive (TP)** | Hotspot correctly detected with high confidence | ![Summary TP](results/xai/summary_TP.png) |
+| **True Negative (TN)** | Regular non-hotspot pattern correctly classified | ![Summary TN](results/xai/summary_TN.png) |
+| **False Positive (FP)** | Complex non-hotspot geometry flagged as false alarm | ![Summary FP](results/xai/summary_FP.png) |
+| **False Negative (FN)** | Subtle hotspot defect missed by classifier | ![Summary FN](results/xai/summary_FN.png) |
 
 ---
 
 ## 📁 Repository Structure
 
 ```text
-├── models/                          # Trained Keras baseline checkpoints (iccad1..iccad5)
-│   ├── custom_cnn_iccad1.keras
-│   └── ...
+├── models/
+│   ├── custom_cnn_iccad1..5.keras    # Baseline model checkpoints
+│   └── xai/
+│       └── xai_cnn_iccad1..5.keras   # Trained XAI-Ready CNN checkpoints (28x28 conv)
 ├── src/
-│   ├── data.py                      # Dataset loader and ImageDataGenerators
-│   ├── model.py                     # Custom CNN architecture definition
-│   ├── metrics.py                   # Balanced accuracy, confusion matrix, metrics
-│   ├── train_baseline.py            # Baseline training and evaluation script
-│   ├── gradcam.py                   # Reusable GradCAM engine & spatial statistics
-│   └── run_gradcam.py               # Batch Grad-CAM extraction pipeline across ICCAD-12
+│   ├── data.py                       # Dataset loader and ImageDataGenerators
+│   ├── model.py                      # Baseline CNN architecture (15x15 final conv)
+│   ├── model_xai.py                  # XAI-Ready CNN architecture (28x28 final conv)
+│   ├── metrics.py                    # Balanced accuracy, confusion matrix, metric reporting
+│   ├── train_baseline.py             # Baseline training and evaluation script
+│   ├── train_xai.py                  # XAI-Ready CNN training with class-balancing
+│   ├── gradcam.py                    # Standalone baseline Grad-CAM engine
+│   ├── run_gradcam.py                # Batch baseline Grad-CAM extraction
+│   ├── xai_engine.py                 # Multi-method XAI suite (Grad-CAM, Grad-CAM++, LayerCAM)
+│   ├── xai_diagnostics.py            # Quantitative spatial attribution diagnostics
+│   └── run_xai.py                    # Full XAI explanation and summary pipeline
 ├── results/
-│   ├── baseline/                    # Baseline metrics JSON, confusion matrices, plots
-│   └── gradcam/                     # Grad-CAM outputs (76 samples across iccad1..iccad5)
-│       ├── gradcam_samples.csv      # Complete quantitative spatial metrics table
-│       ├── GRADCAM_ANALYSIS.md      # Detailed sample-by-sample technical interpretation
-│       ├── summary_TP.png           # Multi-sample comparison grid for TP
-│       ├── summary_TN.png           # Multi-sample comparison grid for TN
-│       ├── summary_FP.png           # Multi-sample comparison grid for FP
-│       ├── summary_FN.png           # Multi-sample comparison grid for FN
-│       ├── iccad1/                  # Individual original, heatmap, overlay, & comparison panels
+│   ├── baseline/                     # Baseline evaluation results & training logs
+│   ├── xai_training/                 # XAI model training logs & comparison metrics
+│   ├── gradcam/                      # Baseline Grad-CAM results (76 samples)
+│   └── xai/                          # Full Multi-Method XAI results (57 representative samples)
+│       ├── xai_diagnostics.csv       # Quantitative spatial metrics table (33 columns)
+│       ├── summary_TP.png            # Multi-method comparison sheet for TP
+│       ├── summary_TN.png            # Multi-method comparison sheet for TN
+│       ├── summary_FP.png            # Multi-method comparison sheet for FP
+│       ├── summary_FN.png            # Multi-method comparison sheet for FN
+│       ├── iccad1/                   # Per-sample folders with 15 explanation artifacts each
 │       ├── iccad2/
 │       ├── iccad3/
 │       ├── iccad4/
 │       └── iccad5/
 ├── docs/
-│   └── GRADCAM.md                   # Full Grad-CAM methodology and mathematical formulation
+│   ├── GRADCAM.md                    # Baseline Grad-CAM mathematical formulation
+│   ├── XAI_MODEL_AUDIT.md            # Phase 1: Baseline & Model Architecture Audit Report
+│   └── XAI_PIPELINE_AUDIT.md         # Comprehensive XAI Pipeline & Concurrency Audit Report
 ├── scripts/
-│   └── tf_gpu.sh                    # Environment launcher with CUDA/cuDNN support
-├── BASELINE.md                      # Baseline reproduction notes and environment specs
-└── requirements.txt                 # Python dependencies
+│   └── tf_gpu.sh                     # GPU environment launcher for CUDA/cuDNN on NixOS
+├── requirements.txt                  # Python dependencies
+└── README.md
 ```
 
 ---
@@ -102,7 +113,7 @@ The baseline model is a lightweight custom Sequential CNN (~12.8k parameters, 2 
 ### 1. Environment Setup
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone git@github.com:Sohan-Chitluri/Explainable-Hotspot-Detection.git
 cd Explainable-Hotspot-Detection
 
@@ -125,47 +136,67 @@ iccad-official/
   iccad5/ (train/test)
 ```
 
-### 3. Reproducing Grad-CAM Visual Explanations
-
-Execute the full Grad-CAM extraction across all 5 ICCAD benchmarks using GPU acceleration:
+### 3. Training the XAI-Ready CNN
 
 ```bash
-# GPU Execution (NixOS / CUDA 12.2 wrapper)
-bash scripts/tf_gpu.sh -m src.run_gradcam
+# GPU Execution (via CUDA launcher)
+bash scripts/tf_gpu.sh -m src.train_xai --benchmarks 1 2 3 4 5
 
-# Standard Python execution
-python -m src.run_gradcam --benchmarks 1 2 3 4 5 --samples-per-case 4
+# Direct Python Execution
+python -m src.train_xai --benchmarks 1 2 3 4 5 --batch-size 32
 ```
 
-### 4. Running Custom Single-Image Grad-CAM
+### 4. Running the Multi-Method XAI Pipeline
+
+```bash
+# GPU Execution (via CUDA launcher)
+bash scripts/tf_gpu.sh -m src.run_xai
+
+# Direct Python Execution
+python -m src.run_xai --benchmarks 1 2 3 4 5 --samples-per-case 3 --alpha 0.45
+```
+
+### 5. Python API Usage
 
 ```python
-from src.gradcam import GradCAM, save_comparison_panel
+from src.xai_engine import XAIEngine
+from src.xai_diagnostics import compute_attribution_diagnostics
 
-# Load model and initialize Grad-CAM targeting conv2d_5
-gc = GradCAM.from_checkpoint("models/custom_cnn_iccad1.keras", target_layer_name="conv2d_5")
+# Load model checkpoint
+engine = XAIEngine.from_checkpoint("models/xai/xai_cnn_iccad1.keras", target_layer_name="conv_final_2")
 
-# Explain a test layout
-result = gc.explain_image("iccad-official/iccad1/test/test_hs/HS73.png", target_class="HS")
+# Preprocess input layout image
+img_tensor, raw_rgb = engine.preprocess_image("iccad-official/iccad1/test/test_hs/HS73.png")
 
-print("Prediction:", result["pred_label"], "P(HS):", result["p_hs"])
-print("Activation Center of Mass:", result["centroid_x"], result["centroid_y"])
-print("Top-10% Activation Concentration:", result["top10_activation_fraction"])
+# 1. Vanilla Grad-CAM
+_, gcam_heatmap, gcam_info = engine.explain_gradcam(img_tensor, target_class="HS")
 
-# Save 3-panel figure: Original | Heatmap | Overlay
-save_comparison_panel(
-    result["raw_rgb"],
-    result["heatmap_224"],
-    result["overlay"],
-    "output_comparison.png",
-    title="ICCAD-1 HS Sample 73"
-)
+# 2. Grad-CAM++
+_, gcam_pp_heatmap, _ = engine.explain_gradcam_plus_plus(img_tensor, target_class="HS")
+
+# 3. LayerCAM
+_, layercam_heatmap, _ = engine.explain_layercam(img_tensor, target_class="HS")
+
+# 4. Quantitative Spatial Diagnostics
+diagnostics = compute_attribution_diagnostics(layercam_heatmap)
+print(f"LayerCAM Centroid: ({diagnostics['centroid_x']}, {diagnostics['centroid_y']})")
+print(f"Spatial Spread Radius: {diagnostics['spatial_spread_radius']} px")
+print(f"Fraction of Area > 0.5: {diagnostics['fraction_above_050'] * 100:.1f}%")
 ```
+
+---
+
+## 📑 Technical Documentation & Audit Reports
+
+- [docs/XAI_PIPELINE_AUDIT.md](docs/XAI_PIPELINE_AUDIT.md): In-depth audit report analyzing test-set coverage (146,277 images), 57-row CSV explanation, task-123 vs task-127 concurrency forensics, method verification, and provenance.
+- [docs/XAI_MODEL_AUDIT.md](docs/XAI_MODEL_AUDIT.md): Baseline model architecture audit, receptive field limitations, and XAI-Ready CNN design rationale.
+- [docs/GRADCAM.md](docs/GRADCAM.md): Detailed mathematical formulations for Grad-CAM pre-sigmoid backpropagation and spatial metrics.
 
 ---
 
 ## 📖 Citation & References
 
 - Selvaraju, R. R., et al. (2017). *Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization*. ICCV 2017.
+- Chattopadhay, A., et al. (2018). *Grad-CAM++: Generalized Gradient-Based Visual Explanations for Deep Convolutional Networks*. WACV 2018.
+- Jiang, P.-T., et al. (2021). *LayerCAM: Exploring Hierarchical Class Activation Maps for Localization*. IEEE TIP 2021.
 - ICCAD-12 CAD Contest on Lithography Hotspot Detection: Benchmark Dataset.
-- Original Baseline Codebase: [Intelectron6/Lithography-Hotspot-Detection](https://github.com/Intelectron6/Lithography-Hotspot-Detection).
