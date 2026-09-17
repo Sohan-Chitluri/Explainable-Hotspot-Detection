@@ -114,7 +114,7 @@ class XAIEngine:
         else:
             raise TypeError(f"Unsupported image_input type: {type(image_input)}")
 
-        raw_rgb = np.array(pil_img.resize(target_size), dtype=np.uint8)
+        raw_rgb = np.array(pil_img.resize(target_size, resample=Image.Resampling.NEAREST), dtype=np.uint8)
         img_array = raw_rgb.astype(np.float32) / 255.0
         img_tensor = np.expand_dims(img_array, axis=0)
         return img_tensor, raw_rgb
