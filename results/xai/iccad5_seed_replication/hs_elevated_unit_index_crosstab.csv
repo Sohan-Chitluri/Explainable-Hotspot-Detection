@@ -1,0 +1,17 @@
+unit,balanced_sampling_seed1,balanced_sampling_seed2,balanced_sampling_seed3,baseline_noweight_seed1,baseline_noweight_seed2
+0,True,False,False,False,False
+1,False,False,False,False,False
+2,False,False,False,False,False
+3,False,True,False,False,False
+4,False,True,True,False,False
+5,False,False,False,False,False
+6,True,False,True,False,False
+7,False,False,True,False,False
+8,True,False,False,False,False
+9,False,False,True,False,False
+10,False,True,True,False,False
+11,True,False,True,False,False
+12,False,True,True,False,False
+13,True,False,False,False,False
+14,False,False,False,False,False
+15,False,False,False,False,False

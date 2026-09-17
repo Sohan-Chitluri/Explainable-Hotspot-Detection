@@ -1,0 +1,6 @@
+run_name,condition_family,n_dead_units,n_active_units,n_HS_elevated_units,n_NHS_elevated_units,max_HS_AUC,n_HS,n_NHS,zero_vector_pct_overall,zero_vector_pct_HS,zero_vector_pct_NHS,zero_vector_pct_TP,zero_vector_pct_TN,zero_vector_pct_FP,zero_vector_pct_FN,mean_penult_norm_HS,mean_penult_norm_NHS,mean_n_active_units_HS,mean_n_active_units_NHS,centroid_distance_HS_NHS,within_HS_mean_dist_to_centroid,within_NHS_mean_dist_to_centroid,centroid_dist_over_within_NHS_ratio
+balanced_sampling_seed1,balanced_sampling,1,15,5,5,0.9863,41,19327,0.0,0.0,0.0,0.0,0.0,0.0,0.0,19.5602,20.9144,9.878,7.1026,21.9025,5.3158,4.9732,4.4041
+balanced_sampling_seed2,balanced_sampling,4,12,4,5,0.986,41,19327,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.8707,39.2632,7.0244,5.3255,38.2228,6.3473,10.3632,3.6883
+balanced_sampling_seed3,balanced_sampling,3,13,7,4,0.9852,41,19327,0.0,0.0,0.0,0.0,0.0,0.0,0.0,21.4558,21.4405,10.5854,5.8078,20.9218,6.9181,5.7926,3.6118
+baseline_noweight_seed1,baseline_noweight,6,10,0,4,0.5,41,19327,0.4389,95.122,0.238,100.0,0.0,93.878,0.0,0.7047,18.1823,0.2683,6.4317,16.3173,1.2827,7.4342,2.1949
+baseline_noweight_seed2,baseline_noweight,8,8,0,5,0.5,41,19327,0.3717,78.0488,0.207,96.97,0.0,100.0,0.0,1.4215,28.2156,0.5854,6.2613,26.3272,2.2814,8.8731,2.9671

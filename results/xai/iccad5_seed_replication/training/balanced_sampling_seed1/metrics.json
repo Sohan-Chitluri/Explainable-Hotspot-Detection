@@ -1,0 +1,98 @@
+{
+  "confusion_matrix": {
+    "tp": 39,
+    "tn": 19275,
+    "fp": 52,
+    "fn": 2
+  },
+  "precision": 0.42857142857142855,
+  "recall_sensitivity": 0.9512195121951219,
+  "specificity": 0.9973094634449217,
+  "f1_score": 0.5909090909090909,
+  "balanced_accuracy": 0.9742644878200217,
+  "accuracy": 0.9972118959107806,
+  "positive_label": 0,
+  "class_indices": {
+    "test_hs": 0,
+    "test_nhs": 1
+  },
+  "n_samples": 19368,
+  "n_predicted_positive": 91,
+  "run_name": "balanced_sampling_seed1",
+  "condition_family": "balanced_sampling",
+  "benchmark": "iccad5",
+  "epochs": 10,
+  "batch_size": 32,
+  "optimizer": "nadam",
+  "loss": "binary_crossentropy",
+  "seed": 101,
+  "init_weight_abs_sum_checksum": 3289.20361328125,
+  "class_weight_applied": false,
+  "balanced_sampling_applied": true,
+  "dataset_counts": {
+    "train_hs": 26,
+    "train_nhs": 2716,
+    "test_hs": 41,
+    "test_nhs": 19327,
+    "total_train": 2742,
+    "total_val": 19368
+  },
+  "latency": {
+    "ms_per_sample": 8.141,
+    "fps": 122.8,
+    "eval_samples": 640
+  },
+  "checkpoint_selection": {
+    "criterion": "best validation balanced accuracy (same BestBalancedAccuracyCheckpoint as production)",
+    "selected_epoch": 7,
+    "selected_epoch_val_balanced_accuracy": 0.9742644878200217
+  },
+  "history_val_true_positives": [
+    19327.0,
+    19327.0,
+    19327.0,
+    19311.0,
+    19303.0,
+    19292.0,
+    19287.0,
+    19275.0,
+    19270.0,
+    19267.0
+  ],
+  "history_val_true_negatives": [
+    0.0,
+    0.0,
+    2.0,
+    24.0,
+    34.0,
+    37.0,
+    38.0,
+    39.0,
+    39.0,
+    39.0
+  ],
+  "history_val_false_positives": [
+    41.0,
+    41.0,
+    39.0,
+    17.0,
+    7.0,
+    4.0,
+    3.0,
+    2.0,
+    2.0,
+    2.0
+  ],
+  "history_val_false_negatives": [
+    0.0,
+    0.0,
+    0.0,
+    16.0,
+    24.0,
+    35.0,
+    40.0,
+    52.0,
+    57.0,
+    60.0
+  ]
+}
