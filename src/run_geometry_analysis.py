@@ -143,7 +143,14 @@ def process_sample(engine, row, occlusion_dir_root, geometry_dir_root, save_plot
             control_summary[f"control_{m}_max"] = round(float(arr.max()), 4)
 
         for method in METHODS:
-            mask = topk_mask_by_area(attr_maps[method], level)
+            amap = attr_maps[method]
+            # A perfectly flat attribution map (e.g. an exactly-zero gradient CAM, see
+            # docs/TP_FP_GEOMETRY_ANALYSIS.md Sec 9) has no well-defined "top-K%" region --
+            # argpartition still returns *a* region, but it is an arbitrary tie-break, not
+            # a meaningful attribution area. Flag it rather than silently treating it as
+            # real signal (ported from src/run_tp_fp_geometry.py).
+            is_degenerate_map = bool(np.ptp(amap) < 1e-6)
+            mask = topk_mask_by_area(amap, level)
             metrics = compute_overlap_metrics(mask, geom)
             rec = {
                 "benchmark": benchmark,
@@ -153,6 +160,7 @@ def process_sample(engine, row, occlusion_dir_root, geometry_dir_root, save_plot
                 "predicted_label": pred,
                 "method": method,
                 "level_pct": int(round(level * 100)),
+                "is_degenerate_map": is_degenerate_map,
                 "mask_area_px": int(mask.sum()),
                 "target_area_px": target_area,
                 "control_area_px": control_area_px,
@@ -210,19 +218,29 @@ def main():
     out_csv = args.results_dir / "geometry_diagnostics.csv"
     out_df.to_csv(out_csv, index=False)
     print(f"\nSaved {len(out_df)} rows -> {out_csv}")
+    n_deg = out_df["is_degenerate_map"].sum()
+    print(f"Degenerate (flat) attribution maps: {n_deg}/{len(out_df)} rows "
+          f"({out_df.groupby('method')['is_degenerate_map'].mean().round(3).to_dict()})")
 
     if not args.smoke_test:
-        build_summary(out_df, args.results_dir)
+        build_summary(out_df, args.results_dir, exclude_degenerate=False)
+        build_summary(out_df, args.results_dir, exclude_degenerate=True)
         build_summary_plots(out_df, args.results_dir / "plots")
 
 
-def build_summary(df: pd.DataFrame, results_dir: Path):
+def build_summary(df: pd.DataFrame, results_dir: Path, exclude_degenerate: bool = False):
     from src.geometry_features import METRIC_NAMES as METRICS
     rows = []
     group_cols = ["case_type", "benchmark", "method", "level_pct"]
-    for keys, sub in df.groupby(group_cols):
+    src = df[~df["is_degenerate_map"]] if exclude_degenerate else df
+    for keys, sub in src.groupby(group_cols):
         rec = dict(zip(group_cols, keys))
         rec["n_samples"] = len(sub)
+        n_deg = int(df[
+            (df["case_type"] == rec["case_type"]) & (df["benchmark"] == rec["benchmark"]) &
+            (df["method"] == rec["method"]) & (df["level_pct"] == rec["level_pct"])
+        ]["is_degenerate_map"].sum())
+        rec["n_degenerate_excluded"] = n_deg if exclude_degenerate else 0
         for m in METRICS:
             vals = sub[m].values
             ctrl_vals = sub[f"control_{m}_mean"].values
@@ -233,9 +251,10 @@ def build_summary(df: pd.DataFrame, results_dir: Path):
             rec[f"{m}_paired_diff_median"] = round(float(np.median(vals - ctrl_vals)), 4)
         rows.append(rec)
     summary_df = pd.DataFrame(rows)
-    out_csv = results_dir / "summary.csv"
+    suffix = "_excl_degenerate" if exclude_degenerate else ""
+    out_csv = results_dir / f"summary{suffix}.csv"
     summary_df.to_csv(out_csv, index=False)
-    print(f"Saved summary -> {out_csv}")
+    print(f"Saved summary -> {out_csv} ({len(summary_df)} rows)")
 
 
 def build_summary_plots(df: pd.DataFrame, plots_dir: Path):

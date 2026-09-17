@@ -1,0 +1,92 @@
+{
+  "FINAL_ICCAD5_SYNTHESIS.md": {
+    "mtime": 1789639023.400401,
+    "seen": 1789639833.6503696,
+    "ast_hash": "5e2b630c7f3390175c3d4152d96dbda6",
+    "semantic_hash": "5e2b630c7f3390175c3d4152d96dbda6"
+  },
+  "FINAL_RESEARCH_REPORT.md": {
+    "mtime": 1789639326.0142255,
+    "seen": 1789639833.650372,
+    "ast_hash": "2c4e386901351259bee5843e93c32edb",
+    "semantic_hash": "2c4e386901351259bee5843e93c32edb"
+  },
+  "GEOMETRY_ANALYSIS_REPORT.md": {
+    "mtime": 1789547962.3721058,
+    "seen": 1789639833.6503735,
+    "ast_hash": "449f28266c149bc743fcb503a34723d3",
+    "semantic_hash": "449f28266c149bc743fcb503a34723d3"
+  },
+  "GRADCAM.md": {
+    "mtime": 1789521193.6686707,
+    "seen": 1789639833.6503742,
+    "ast_hash": "adeab2f5ce9d1a0f46ce5e9a6f02760e",
+    "semantic_hash": "adeab2f5ce9d1a0f46ce5e9a6f02760e"
+  },
+  "ICCAD5_BOTTLENECK_ANALYSIS.md": {
+    "mtime": 1789563659.2169783,
+    "seen": 1789639833.6503747,
+    "ast_hash": "7a907d504c27c87ac643a5bb02b67742",
+    "semantic_hash": "7a907d504c27c87ac643a5bb02b67742"
+  },
+  "ICCAD5_CHECKPOINT_FIX.md": {
+    "mtime": 1789561911.6125417,
+    "seen": 1789639833.6503751,
+    "ast_hash": "3fb4e129aad50cb707986ab8bdebfb95",
+    "semantic_hash": "3fb4e129aad50cb707986ab8bdebfb95"
+  },
+  "ICCAD5_FORENSIC_AUDIT.md": {
+    "mtime": 1789549903.3773606,
+    "seen": 1789639833.6503758,
+    "ast_hash": "a14911cb4ad5e788a1393e8068ae2f09",
+    "semantic_hash": "a14911cb4ad5e788a1393e8068ae2f09"
+  },
+  "ICCAD5_IMBALANCE_ABLATION.md": {
+    "mtime": 1789577845.6907287,
+    "seen": 1789639833.6503766,
+    "ast_hash": "5708e2c98af3124ef3a7e23f02b259ce",
+    "semantic_hash": "5708e2c98af3124ef3a7e23f02b259ce"
+  },
+  "ICCAD5_SEED_REPLICATION.md": {
+    "mtime": 1789617050.5700643,
+    "seen": 1789639833.650377,
+    "ast_hash": "37dc8eb5453162bd80b94604a628536e",
+    "semantic_hash": "37dc8eb5453162bd80b94604a628536e"
+  },
+  "OCCLUSION.md": {
+    "mtime": 1789536874.7003436,
+    "seen": 1789639833.6503775,
+    "ast_hash": "1b9d57779d8d149bc3c2ddd90b4d994e",
+    "semantic_hash": "1b9d57779d8d149bc3c2ddd90b4d994e"
+  },
+  "RASTER_GEOMETRY_METHOD.md": {
+    "mtime": 1789547655.3839738,
+    "seen": 1789639833.650378,
+    "ast_hash": "fa3d9c76a0b843fb404b9ce6c85f57f9",
+    "semantic_hash": "fa3d9c76a0b843fb404b9ce6c85f57f9"
+  },
+  "TP_FP_GEOMETRY_ANALYSIS.md": {
+    "mtime": 1789549148.662114,
+    "seen": 1789639833.6503785,
+    "ast_hash": "1aae79a34fc97de9912a0e26d04d9a9d",
+    "semantic_hash": "1aae79a34fc97de9912a0e26d04d9a9d"
+  },
+  "XAI_MODEL_AUDIT.md": {
+    "mtime": 1789524108.446135,
+    "seen": 1789639833.6503787,
+    "ast_hash": "f5debe41304e6b608c5799e330ac7f80",
+    "semantic_hash": "f5debe41304e6b608c5799e330ac7f80"
+  },
+  "XAI_PIPELINE_AUDIT.md": {
+    "mtime": 1789535563.1296651,
+    "seen": 1789639833.6503792,
+    "ast_hash": "24f54ff14945caecbc8c961418b2171c",
+    "semantic_hash": "24f54ff14945caecbc8c961418b2171c"
+  },
+  "XAI_RESEARCH_AUDIT.md": {
+    "mtime": 1789546947.3004403,
+    "seen": 1789639833.6503797,
+    "ast_hash": "eee68f788eeba97e625ba19cefb6718c",
+    "semantic_hash": "eee68f788eeba97e625ba19cefb6718c"
+  }
+}
