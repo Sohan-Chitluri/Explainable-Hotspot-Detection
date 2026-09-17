@@ -1,0 +1,4 @@
+condition,balanced_accuracy,recall_sensitivity_HS,specificity_NHS,precision,f1_score,TP,TN,FP,FN,n_test_samples,selected_epoch,selected_epoch_val_balanced_accuracy,class_weight_applied,balanced_sampling_applied
+baseline_noweight,0.9741,0.9512,0.9969,0.3939,0.5571,39,19267,60,2,19368,7,0.9741,False,False
+class_weighted,0.9649,0.9512,0.9786,0.0863,0.1582,39,18914,413,2,19368,8,0.9649,True,False
+balanced_sampling,0.9501,0.9024,0.9978,0.4684,0.6167,37,19285,42,4,19368,8,0.9501,False,True

@@ -1,0 +1,4 @@
+condition,n_dead_units,n_HS,n_NHS,mean_penult_norm_HS,mean_penult_norm_NHS,mean_n_active_units_HS,mean_n_active_units_NHS,zero_vector_pct_overall,zero_vector_pct_HS,zero_vector_pct_NHS,centroid_distance_HS_NHS,within_HS_mean_dist_to_centroid,within_NHS_mean_dist_to_centroid,centroid_dist_over_within_NHS_ratio
+baseline_noweight,3,41,19327,92.5637,41.2579,1.7073,8.4075,0.0,0.0,0.0,73.7855,10.4269,15.3559,4.805
+class_weighted,6,41,19327,1.0982,29.4944,0.2439,5.1087,1.792,85.366,1.614,27.274,1.9332,13.547,2.0133
+balanced_sampling,3,41,19327,33.8436,22.3457,8.2927,9.1371,0.0,0.0,0.0,31.7166,6.3199,6.4816,4.8933
