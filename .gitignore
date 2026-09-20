@@ -35,3 +35,5 @@ tmp/
 *.log
 .cache/
 .system_generated/
+
+graphify-out/
