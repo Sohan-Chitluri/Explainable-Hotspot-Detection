@@ -1,0 +1,12 @@
+{
+  "n": 20,
+  "selection": "First 10 HS + 10 NHS by SHA256(seed|relative path); no confidence selection",
+  "device_note": "CPU forward pass pilot; GPU unavailable (nvidia-smi exit 6 reconfirmed 2026-09-17)",
+  "checkpoint_sha256": "9479f07781b0128e19d891b295c99b544f9e6fd2b9a4628533138a47c8085b70",
+  "tensor_equivalence": "official-path tensor equality asserted per image (all true or run aborts)",
+  "probability_max_difference_nearest_vs_legacy_bicubic": 0.080775,
+  "probability_mean_difference_nearest_vs_legacy_bicubic": 0.0130075,
+  "classification_disagreements_nearest_vs_legacy_bicubic": 0,
+  "status": "PILOT_n20_descriptive",
+  "limitations": "Single checkpoint, 20 deterministic images, CPU forward passes. Full-set GPU inference and per-benchmark sweeps remain blocked. Descriptive only; no production claim."
+}
