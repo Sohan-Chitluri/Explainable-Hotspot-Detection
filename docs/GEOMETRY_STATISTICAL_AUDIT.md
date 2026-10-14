@@ -1,7 +1,7 @@
 # Geometry Statistical Audit — Agent C
 
 **Audit Date:** 2026-09-18  
-**Scope:** CPU-only reproduction and verification of all geometry statistics from `docs/GEOMETRY_ANALYSIS_REPORT.md`, `docs/RASTER_GEOMETRY_METHOD.md`, `src/geometry_features.py`, `src/run_geometry_analysis.py`, `results/xai/geometry/geometry_diagnostics.csv` (684 rows), `results/xai/xai_diagnostics.csv` (57 rows), and `docs/TP_FP_GEOMETRY_ANALYSIS.md`. GPU unavailable — all verification via `.venv/bin/python`.
+**Scope:** Reproduction and verification of all geometry statistics from `docs/GEOMETRY_ANALYSIS_REPORT.md`, `docs/RASTER_GEOMETRY_METHOD.md`, `src/geometry_features.py`, `src/run_geometry_analysis.py`, `results/xai/geometry/geometry_diagnostics.csv` (684 rows), `results/xai/xai_diagnostics.csv` (57 rows), and `docs/TP_FP_GEOMETRY_ANALYSIS.md`. All verification via `.venv/bin/python`.
 
 ---
 

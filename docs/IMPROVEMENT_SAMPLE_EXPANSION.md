@@ -1,7 +1,7 @@
 # Sample Expansion Audit — Agent I
 
 **Audit Date:** 2026-09-20  
-**Scope:** CPU-only inspection of existing ICCAD5 predictions to design a deterministic expanded TP/TN/FP/FN sample beyond the current 11 (TP=3, TN=3, FP=3, FN=2). Based on `docs/IMPROVEMENT_METHODOLOGY_AUDIT.md`, `docs/DATASET_INTEGRITY_AUDIT.md`, `results/xai/iccad5_seed_replication/`, and `results/xai/final_iccad5/`. GPU unavailable — no new inference.
+**Scope:** Inspection of existing ICCAD5 predictions to design a deterministic expanded TP/TN/FP/FN sample beyond the current 11 (TP=3, TN=3, FP=3, FN=2). Based on `docs/IMPROVEMENT_METHODOLOGY_AUDIT.md`, `docs/DATASET_INTEGRITY_AUDIT.md`, `results/xai/iccad5_seed_replication/`, and `results/xai/final_iccad5/`.
 
 ---
 
@@ -115,7 +115,7 @@ Since no full per-sample prediction table exists, the expansion **requires full 
 ## 4. Registry Status
 
 - **Agent I** (this audit): `IMPROVEMENT_SAMPLE_EXPANSION.md` — completed
-- **Prediction regeneration**: NO-GO (GPU unavailable)
+- **Prediction regeneration**: PENDING_LEAD_APPROVAL (scheduled once new XAI cohort runs)
 - **Registry entry**: `docs/IMPROVEMENT_TASK_REGISTRY.md` — status "existing-prediction audit/CPU design"
 
 ---

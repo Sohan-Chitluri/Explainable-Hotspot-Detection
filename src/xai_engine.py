@@ -184,40 +184,35 @@ class XAIEngine:
         """
         target_idx, target_name = self._resolve_target_idx(img_tensor, target_class)
 
-        with tf.GradientTape(persistent=True) as tape_grad2:
-            with tf.GradientTape() as tape_grad1:
-                conv_outputs, penult_outputs, preds = self.sub_model(img_tensor, training=False)
-                logit_nhs = get_pre_sigmoid_logit(self.model, penult_outputs)
-                target_score = -logit_nhs if target_idx == 0 else logit_nhs
-            grads_1 = tape_grad1.gradient(target_score, conv_outputs)
+        with tf.GradientTape() as tape:
+            conv_outputs, penult_outputs, preds = self.sub_model(img_tensor, training=False)
+            logit_nhs = get_pre_sigmoid_logit(self.model, penult_outputs)
+            target_score = -logit_nhs if target_idx == 0 else logit_nhs
 
-        grads_2 = tape_grad2.gradient(grads_1, conv_outputs)
-        grads_3 = tape_grad2.gradient(grads_2, conv_outputs)
-        del tape_grad2
-
-        if grads_1 is None:
+        grads = tape.gradient(target_score, conv_outputs)
+        if grads is None:
             raise RuntimeError("Grad-CAM++ gradient computation failed.")
 
-        # Replace None with zeros if higher gradients vanish
-        if grads_2 is None:
-            grads_2 = tf.zeros_like(grads_1)
-        if grads_3 is None:
-            grads_3 = tf.zeros_like(grads_1)
-
         conv_out = conv_outputs[0]  # (H, W, C)
-        g1 = grads_1[0]
-        g2 = grads_2[0]
-        g3 = grads_3[0]
+        g = grads[0]                # (H, W, C)
 
-        # Grad-CAM++ alpha weighting:
-        # alpha_ij^k = g2 / (2 * g2 + sum(A * g3) + eps)
-        denom = 2.0 * g2 + tf.reduce_sum(conv_out * g3, axis=(0, 1), keepdims=True)
+        # Exact closed-form Grad-CAM++ formulation (Chattopadhay et al., WACV 2018, Eqs. 19-21):
+        # Target score Y^c = exp(S^c). Diagonal higher-order derivatives of Y^c evaluate to:
+        #   d^2 Y^c / (dA_ij^k)^2 = exp(S^c) * (g_ij^k)^2
+        #   d^3 Y^c / (dA_ij^k)^3 = exp(S^c) * (g_ij^k)^3
+        # Cancelling the common exp(S^c) scalar factor from numerator and denominator yields:
+        #   alpha_ij^k = (g_ij^k)^2 / ( 2*(g_ij^k)^2 + sum_ab(A_ab^k * (g_ab^k)^3) + eps )
+        g2 = tf.square(g)
+        g3 = tf.pow(g, 3)
+
+        sum_A_g3 = tf.reduce_sum(conv_out * g3, axis=(0, 1), keepdims=True)
+        denom = 2.0 * g2 + sum_A_g3
         denom = tf.where(denom != 0.0, denom, tf.ones_like(denom) * 1e-10)
         alphas = g2 / denom
 
-        # Channel weights: w_k = sum_i,j (alpha_ij^k * ReLU(g1_ij^k))
-        pos_g1 = tf.maximum(g1, 0.0)
-        weights = tf.reduce_sum(alphas * pos_g1, axis=(0, 1))
+        # Channel weights: w_k = sum_ij (alphas_ij^k * ReLU(g_ij^k))
+        pos_g = tf.maximum(g, 0.0)
+        weights = tf.reduce_sum(alphas * pos_g, axis=(0, 1))
 
         cam = conv_out @ weights[..., tf.newaxis]
         cam = tf.squeeze(cam)

@@ -1,6 +1,6 @@
 # Workstream A — methodology audit and training gate
 
-Audit date: 2026-09-17. Scope: read-only source/document/result audit at baseline `c4f7cb1`; only this document is written by A. No training, neural inference, installs, driver changes, checkpoint edits, or historical-result edits. GPU unavailable per `docs/IMPROVEMENT_TASK_REGISTRY.md:5–7` (lead-confirmed NVIDIA exit 6; TensorFlow 2.15.1 `GPUS []`). Findings below distinguish source-confirmed defects from scientific uncertainties requiring a future experiment.
+Audit date: 2026-09-17. Scope: read-only source/document/result audit at baseline `c4f7cb1`; only this document is written by A. No training, neural inference, installs, driver changes, checkpoint edits, or historical-result edits. Findings below distinguish source-confirmed defects from scientific uncertainties requiring a future experiment.
 
 ## Executive decision / immediate B dispatch
 

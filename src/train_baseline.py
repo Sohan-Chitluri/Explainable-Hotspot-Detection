@@ -5,6 +5,24 @@ Train the repository custom CNN baseline on ICCAD-12 benchmarks.
 Faithful reproduction of LHD_CustomModel.ipynb (Approach 2), adapted for local
 execution (CPU allowed; Colab drive/unrar/GPU hard-fail removed).
 
+Train/Val/Test split (leakage fix)
+-----------------------------------
+Previously ``dataset_analysis`` mapped ``validation_dir`` to ``iccad{N}/test/``,
+making per-epoch ``val_*`` metrics visible on the test set during training.  While
+no callback performs automated checkpoint selection, the per-benchmark epoch counts
+in ``BENCHMARK_EPOCHS`` are pre-declared constants (ported from the original
+notebook) and are NOT chosen by watching these val curves — they are fixed before
+any training run starts.  The leakage was therefore at most observational.
+
+Nonetheless, for correctness and consistency with ``train_xai.py``, this script
+now uses ``make_three_way_split`` (``src/data.py``):
+- ``val_gen``  : 15 % stratified carve-out of ``iccad{N}/train/``, shown to
+                ``model.fit(validation_data=...)`` for per-epoch monitoring.
+- ``test_gen`` : official ``iccad{N}/test/``, used exactly once after training
+                for the reported final metrics.
+
+See ``docs/THREE_WAY_SPLIT.md`` for reproducibility details.
+
 Usage (from repo root, with .venv activated):
   python -m src.train_baseline
   python -m src.train_baseline --benchmarks 1 2
@@ -29,7 +47,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import models as keras_models
 
-from src.data import data_extractor, dataset_analysis
+from src.data import make_three_way_split
 from src.metrics import (
     binary_metrics,
     plot_balanced_accuracy_curves,
@@ -39,6 +57,11 @@ from src.metrics import (
 from src.model import build_custom_cnn
 
 # Epochs per benchmark, matching the notebook.
+# These counts are pre-declared constants ported from LHD_CustomModel.ipynb and
+# are NOT chosen by watching per-epoch validation curves (the leakage-fix note
+# in the module docstring explains why the old observational leakage is now
+# resolved by the 3-way split).  Changing these values would require re-running
+# all baseline evaluations and updating BASELINE.md.
 BENCHMARK_EPOCHS = {
     1: 5,
     2: 5,
@@ -151,43 +174,64 @@ def train_one_benchmark(
     models_dir: Path,
 ):
     epochs = BENCHMARK_EPOCHS[benchmark]
-    folder = str(data_root / f"iccad{benchmark}") + "/"
+    benchmark_name = f"iccad{benchmark}"
+    benchmark_dir = data_root / benchmark_name
     print("=" * 72)
-    print(f"Benchmark iccad{benchmark} | epochs={epochs} | folder={folder}")
+    print(f"Benchmark {benchmark_name} | epochs={epochs} | dir={benchmark_dir}")
     print("=" * 72)
 
-    train_dir, val_dir, counts = dataset_analysis(folder)
-    train_data_gen, val_data_gen = data_extractor(
-        train_dir, val_dir, batch_size=BATCH_SIZE
+    # ------------------------------------------------------------------ #
+    # Three-way split: train / val carve-out / test                       #
+    # val_gen  → model.fit(validation_data=...) for per-epoch monitoring  #
+    # test_gen → used ONCE post-training for final reported metrics only  #
+    # ------------------------------------------------------------------ #
+    # seed defaults to 42 (consistent with train_xai.py and the global TF seed
+    # set in main()).  Pass the same seed that tf.keras.utils.set_random_seed
+    # uses for a fully reproducible run.
+    split = make_three_way_split(
+        benchmark_dir,
+        benchmark_name,
+        val_frac=0.15,
+        seed=42,
+        batch_size=BATCH_SIZE,
+        img_size=IMG_SIZE,
     )
-    print("class_indices (train):", train_data_gen.class_indices)
-    print("class_indices (val):", val_data_gen.class_indices)
+    train_gen = split.train_gen
+    val_gen = split.val_gen
+    test_gen = split.test_gen
+    counts = split.counts
+    split_manifest = split.split_manifest
+
+    print("class_indices (train):", train_gen.class_indices)
+    print("class_indices (val):", val_gen.class_indices)
 
     model = build_custom_cnn(input_shape=(*IMG_SIZE, 3))
     model.summary()
     model.compile(optimizer=OPTIMIZER, loss=LOSS, metrics=TRAIN_METRICS)
 
+    # BENCHMARK_EPOCHS is pre-declared — not chosen by watching val curves.
+    # No checkpoint-selection callback; final-epoch weights are saved.
     history = model.fit(
-        train_data_gen,
+        train_gen,
         epochs=epochs,
-        validation_data=val_data_gen,
+        validation_data=val_gen,   # val carve-out only — not test/
     )
 
-    bench_dir = results_dir / f"iccad{benchmark}"
+    bench_dir = results_dir / benchmark_name
     bench_dir.mkdir(parents=True, exist_ok=True)
     models_dir.mkdir(parents=True, exist_ok=True)
 
     bal_train, bal_val = plot_balanced_accuracy_curves(
         history,
         bench_dir / "balanced_accuracy_vs_epoch.png",
-        title=f"iccad{benchmark}: Balanced Accuracy vs Epoch",
+        title=f"{benchmark_name}: Balanced Accuracy vs Epoch (val=carve-out)",
     )
 
-    # Final evaluation on the held-out test split (notebook's validation_dir).
-    final_metrics, y_true, y_pred, probs = evaluate_generator(model, val_data_gen)
+    # Final evaluation on the official held-out test split, exactly once.
+    final_metrics, y_true, y_pred, probs = evaluate_generator(model, test_gen)
     final_metrics.update(
         {
-            "benchmark": f"iccad{benchmark}",
+            "benchmark": benchmark_name,
             "epochs": epochs,
             "batch_size": BATCH_SIZE,
             "optimizer": OPTIMIZER,
@@ -197,8 +241,12 @@ def train_one_benchmark(
             "dataset_counts": counts,
             "history_val_balanced_accuracy": bal_val,
             "best_history_val_balanced_accuracy": float(max(bal_val)) if bal_val else None,
+            "split_manifest_file": "split_manifest.json",
         }
     )
+
+    with open(bench_dir / "split_manifest.json", "w", encoding="utf-8") as f:
+        json.dump(split_manifest, f, indent=2)
 
     save_metrics_json(final_metrics, bench_dir / "metrics.json")
     save_confusion_matrix_png(

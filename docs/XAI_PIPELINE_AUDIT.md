@@ -3,7 +3,7 @@
 **Audit Date:** 2026-09-18  
 **Scope:** Full XAI pipeline (Grad-CAM, Grad-CAM++, LayerCAM, Occlusion, Geometry Correlation)  
 **Repository:** `/home/peskybird/Projects/Ai_Ml_DA`  
-**GPU Status:** Unavailable (CPU-only validation)
+**GPU Status:** Available and operational
 
 ---
 

@@ -19,6 +19,14 @@ iccad-official/
 iccad_official.rar
 iccad_inference_test/
 iccad_inference_test.zip
+hsd-data-release.tar.gz
+openhsd/
+work/
+saved/
+docx_extracted/
+models/
+results/
+
 
 # Scratch scripts and temporary files
 scratch/

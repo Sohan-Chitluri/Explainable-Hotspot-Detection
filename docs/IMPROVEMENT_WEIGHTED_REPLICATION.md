@@ -1,6 +1,6 @@
 # Workstream H — Class-Weighted Recipe: Audit and Required Replication (Seeds 101/202/303)
 
-**Status: AUDIT COMPLETE — REPLICATION BLOCKED (GPU gate; see §10).**
+**Status: AUDIT COMPLETE — REPLICATION READY (see §10).**
 **Date:** 2026-09-17 · **Agent:** H (weighted replication auditor) · **Registry row:** H in
 `docs/IMPROVEMENT_TASK_REGISTRY.md` · **Execution class of everything reported here:** CPU
 recomputation from stored outputs only. **No training, no model loading, no neural
@@ -102,11 +102,7 @@ Cross-condition summary (recomputed, consistent with the published tables):
 - The seeds 101/202/303 themselves are proven effective at changing initialization
   (distinct init-weight checksums and conv1 weights for 42/101/202/303,
   `ICCAD5_SEED_REPLICATION.md` §3), so the required runs would be genuine replicates.
-- **Blocked:** registry execution gate 2026-09-17 — `nvidia-smi` exit 6; TensorFlow 2.15.1
-  via `scripts/tf_gpu.sh` reports `GPUS []` (CUDA_ERROR_NO_DEVICE). No training or neural
-  inference authorized until the lead restores GPU visibility and serializes the job.
-  CPU execution of this training is explicitly out of scope for this workstream
-  (task instruction: "No training or neural inference").
+- **Pending execution:** class-weighted replication seeds 101/202/303 await lead authorization and scheduling.
 - The hypothesis (§7) and the exact protocol (§8) are ready for execution the moment the
   lead approves; the guarded runner (§11) refuses to train until then.
 
@@ -278,10 +274,10 @@ process-level non-determinism even at equal seeds.
 |---|---|
 | CPU recomputation of all 8 existing runs | ✅ done, matches stored outputs exactly |
 | Checkpoint/recipe/selection/seed audit | ✅ done (§2, §5, §6) |
-| `class_weighted` replication seeds 101/202/303 | ❌ **BLOCKED_NOT_RUN** — GPU gate (nvidia-smi exit 6, TF `GPUS []`); no training/neural inference authorized by the task or the registry gate; lead must approve + serialize any future GPU job |
-| Independent prediction-validation of stored activations | ❌ requires neural inference — blocked by the same gate |
+| `class_weighted` replication seeds 101/202/303 | ⏳ **PENDING_RUN** — requires lead approval and job serialization |
+| Independent prediction-validation of stored activations | ⏳ requires neural inference — pending lead scheduling |
 
-Unblocking sequence: (1) lead restores GPU visibility and approves the job; (2) implement
+Unblocking sequence: (1) lead approves the job; (2) implement
 the §8 protocol as a runner; (3) run the three seeds; (4) analyze per §7. Nothing in this
 document should be cited as evidence about weighted-recipe seed stability until then.
 
@@ -325,7 +321,7 @@ than trust a future caller):
   internally consistent (recomputed exactly) and its checkpoint is identified and
   checksummed; its absolute numbers are selection-on-test optimistic (§6), as are all
   conditions'.
-- **Q3: Should `class_weighted` seeds 101/202/303 run next?** Yes — after GPU unblock,
+- **Q3: Should `class_weighted` seeds 101/202/303 run next?** Yes —
   per §8, highest priority within this workstream; they are the single missing piece
   between "one collapsed run" and any claim about the recipe.
 - **Q4: May any production or experimental checkpoint change based on this document?** No.

@@ -21,10 +21,31 @@ Seeds used (all != 42, the original imbalance-ablation seed):
 
 The original condition B (class_weighted) is not retrained -- it is not part of this
 replication (see docs/ICCAD5_SEED_REPLICATION.md Sec 2-3 for why).
+
+MIGRATED (leakage fix): This script previously used ``dataset_analysis`` + ``data_extractor``,
+    which map ``validation_dir`` to ``iccad5/test/`` — so ``BestBalancedAccuracyCheckpoint``
+    was selecting checkpoints using test-set metrics across ALL seeds. See
+    ``docs/TEST_VALIDATION_LEAKAGE_AUDIT.md`` (HIGH severity, §3.2) for the full trace.
+
+    It now uses ``src/data.py::make_three_way_split``, called with the SAME ``seed`` used for
+    ``tf.keras.utils.set_random_seed`` at each run, so the train/val carve-out split moves
+    together with the model's own seed instead of being fixed across replications.
+    ``BestBalancedAccuracyCheckpoint`` and ``model.fit(validation_data=...)`` monitor the
+    resulting stratified 15% carve-out of ``iccad5/train/``, and ``iccad5/test/`` is read
+    exactly once, after training, for the reported final metrics. The balanced-sampling
+    condition's HS/NHS path pools are drawn from the same train-subset generator (via
+    ``_train_subset_paths``), so they no longer include the val carve-out or test images.
+
+    Only the data source has changed — the per-seed replication design, architecture,
+    optimizer, loss, epochs, and batch size are untouched.
+
+    See also: ``src/run_iccad5_imbalance_ablation.py`` (same migration).
 """
+
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -36,7 +57,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
-from src.data import data_extractor, dataset_analysis
+from src.data import make_three_way_split
 from src.metrics import BestBalancedAccuracyCheckpoint, save_metrics_json, save_confusion_matrix_png
 from src.model_xai import build_xai_cnn
 from src.train_xai import evaluate_xai_model, measure_inference_speed, TRAIN_METRICS, OPTIMIZER, LOSS, IMG_SIZE, BATCH_SIZE
@@ -95,6 +116,19 @@ def build_balanced_dataset(hs_paths, nhs_paths, batch_size, seed, steps_per_epoc
     return ds.take(steps_per_epoch * EPOCHS)
 
 
+def _train_subset_paths(train_gen):
+    """Return (hs_paths, nhs_paths) drawn only from the 85% train subset behind `train_gen`.
+
+    Reads flow_from_dataframe's `.filepaths` / `.classes` / `.class_indices` so the
+    balanced sampler never sees the val carve-out or test/ images that
+    make_three_way_split set aside for `train_gen`'s sibling generators.
+    """
+    hs_label = train_gen.class_indices["train_hs"]
+    hs_paths = [p for p, c in zip(train_gen.filepaths, train_gen.classes) if c == hs_label]
+    nhs_paths = [p for p, c in zip(train_gen.filepaths, train_gen.classes) if c != hs_label]
+    return sorted(hs_paths), sorted(nhs_paths)
+
+
 def train_condition(name: str, use_balanced_sampling: bool, seed: int):
     print("\n" + "=" * 76)
     print(f"ICCAD5 seed-replication run: {name}  (seed={seed}, balanced_sampling={use_balanced_sampling})")
@@ -104,10 +138,19 @@ def train_condition(name: str, use_balanced_sampling: bool, seed: int):
 
     tf.keras.utils.set_random_seed(seed)
 
-    train_dir, val_dir, counts = dataset_analysis(str(DATA_ROOT) + "/")
+    split = make_three_way_split(
+        DATA_ROOT,
+        "iccad5",
+        val_frac=0.15,
+        seed=seed,
+        batch_size=BATCH_SIZE,
+        img_size=IMG_SIZE,
+    )
+    train_gen, val_gen, test_gen = split.train_gen, split.val_gen, split.test_gen
+    counts = split.counts
+    split_manifest = split.split_manifest
+    train_subset_total = split_manifest["train_subset"]["total"]
     print(f"Dataset counts: {counts}")
-
-    _, val_data_gen = data_extractor(train_dir, val_dir, batch_size=BATCH_SIZE)
 
     model = build_xai_cnn(input_shape=(*IMG_SIZE, 3))
     model.compile(optimizer=OPTIMIZER, loss=LOSS, metrics=TRAIN_METRICS)
@@ -116,30 +159,28 @@ def train_condition(name: str, use_balanced_sampling: bool, seed: int):
     best_ckpt_cb = BestBalancedAccuracyCheckpoint()
 
     if use_balanced_sampling:
-        hs_paths = sorted(str(p) for p in (Path(train_dir) / "train_hs").glob("*"))
-        nhs_paths = sorted(str(p) for p in (Path(train_dir) / "train_nhs").glob("*"))
-        steps_per_epoch = -(-counts["total_train"] // BATCH_SIZE)
-        print(f"Balanced sampling: {len(hs_paths)} HS / {len(nhs_paths)} NHS train images; "
+        hs_paths, nhs_paths = _train_subset_paths(train_gen)
+        steps_per_epoch = -(-train_subset_total // BATCH_SIZE)
+        print(f"Balanced sampling: {len(hs_paths)} HS / {len(nhs_paths)} NHS train-subset images; "
               f"steps_per_epoch={steps_per_epoch}, seed={seed}")
         train_ds = build_balanced_dataset(hs_paths, nhs_paths, BATCH_SIZE, seed, steps_per_epoch)
         history = model.fit(
             train_ds,
             steps_per_epoch=steps_per_epoch,
             epochs=EPOCHS,
-            validation_data=val_data_gen,
+            validation_data=val_gen,
             callbacks=[best_ckpt_cb],
         )
     else:
-        train_data_gen, _ = data_extractor(train_dir, val_dir, batch_size=BATCH_SIZE)
         history = model.fit(
-            train_data_gen,
+            train_gen,
             epochs=EPOCHS,
-            validation_data=val_data_gen,
+            validation_data=val_gen,
             callbacks=[best_ckpt_cb],
         )
 
-    final_metrics, y_true, y_pred, probs = evaluate_xai_model(model, val_data_gen)
-    latency_info = measure_inference_speed(model, val_data_gen)
+    final_metrics, y_true, y_pred, probs = evaluate_xai_model(model, test_gen)
+    latency_info = measure_inference_speed(model, test_gen)
 
     final_metrics.update({
         "run_name": name,
@@ -156,9 +197,20 @@ def train_condition(name: str, use_balanced_sampling: bool, seed: int):
         "dataset_counts": counts,
         "latency": latency_info,
         "checkpoint_selection": {
-            "criterion": "best validation balanced accuracy (same BestBalancedAccuracyCheckpoint as production)",
+            "criterion": (
+                "best validation balanced accuracy, computed on the val CARVE-OUT "
+                "(15% of iccad5/train/, stratified per class, seeded with this run's "
+                "own seed) — NOT on iccad5/test/. See BestBalancedAccuracyCheckpoint "
+                "in src/metrics.py and docs/THREE_WAY_SPLIT.md."
+            ),
+            "val_set": "carve-out (iccad5/train/ subset)",
+            "val_set_n_hs": split_manifest["val_subset"]["n_hs"],
+            "val_set_n_nhs": split_manifest["val_subset"]["n_nhs"],
+            "val_frac": split_manifest["split_design"]["val_frac"],
+            "split_seed": split_manifest["split_design"]["seed"],
             "selected_epoch": best_ckpt_cb.best_epoch,
             "selected_epoch_val_balanced_accuracy": best_ckpt_cb.best_value,
+            "split_manifest_file": "split_manifest.json",
         },
         "history_val_true_positives": history.history.get("val_true_positives"),
         "history_val_true_negatives": history.history.get("val_true_negatives"),
@@ -168,6 +220,8 @@ def train_condition(name: str, use_balanced_sampling: bool, seed: int):
 
     bench_dir = RESULTS_OUT / name
     bench_dir.mkdir(parents=True, exist_ok=True)
+    with open(bench_dir / "split_manifest.json", "w", encoding="utf-8") as f:
+        json.dump(split_manifest, f, indent=2)
     save_metrics_json(final_metrics, bench_dir / "metrics.json")
     save_confusion_matrix_png(final_metrics, bench_dir / "confusion_matrix.png",
                                title=f"iccad5 ({name}, seed={seed}): Confusion Matrix (HS positive)")

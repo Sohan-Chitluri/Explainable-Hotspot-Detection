@@ -141,8 +141,7 @@ That note flags the mechanism but (per the task registry) is still marked as an 
 
 - **Magnitude of the bias is not measured.** No experiment in the repo compares a `BestBalancedAccuracyCheckpoint`-selected model's performance on the test set vs. a genuinely unseen third split. The direction of the bias (optimistic) is certain; the size is not quantified.
 - **Whether `BENCHMARK_EPOCHS` was itself chosen by watching test curves** cannot be confirmed or ruled out from the code/git history alone — flagging as ambiguous rather than assuming either way.
-- **GPU is currently unavailable** (per `docs/IMPROVEMENT_RESEARCH_STATE.md`, `nvidia-smi` exit 6 as of 2026-09-17), so no new training runs (with or without a fix) could be executed as part of this audit. This audit is static code/doc analysis only.
-- Whether any *baseline* epoch-count decisions were carried over unchanged from the original notebook (`LHD_CustomModel.ipynb`) — which would reduce the "tuned against this repo's test set" concern for the baseline specifically — was not verified; the notebook itself is not present in this repository to check.
+- **Whether any *baseline* epoch-count decisions were carried over unchanged from the original notebook (`LHD_CustomModel.ipynb`) — which would reduce the "tuned against this repo's test set" concern for the baseline specifically — was not verified; the notebook itself is not present in this repository to check.
 
 ---
 

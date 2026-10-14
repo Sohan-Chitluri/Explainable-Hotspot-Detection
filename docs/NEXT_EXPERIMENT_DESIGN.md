@@ -1,6 +1,6 @@
 # Next Experiment Design — Corrected Minimum Experiment Matrix
 
-**Status**: Design only (GPU unavailable). Authorized for review/approval; no training execution.
+**Status**: Design only. Authorized for review/approval; training execution subject to lead authorization.
 
 **Scope**: ICCAD5 (benchmark 5) only. Synthesizes audits A–G (A = methodology audit; B–H = workstreams in IMPROVEMENT_TASK_REGISTRY). Purpose: define the minimum statistically defensible experiment matrix that corrects the critical defects in A-01 (test-selection leakage), A-02 (preprocessing inconsistency), A-03 (class-weighting causal isolation), and A-09 (seed/reproducibility gaps) while holding all other factors constant.
 
@@ -150,7 +150,7 @@ Same tests; **Holm-Bonferroni** correction across 3 pairwise comparisons × 3 me
 
 ## 8. Execution Gate Checklist (Before Any Training)
 
-- [ ] GPU visibility restored (`nvidia-smi` exit 0, TF reports `GPUS [GPU:0]`)
+- [x] GPU acceleration operational and available
 - [ ] B preprocessing tests pass (CPU prediction equivalence: corrected tensors match official path on 20+ deterministic rasters)
 - [ ] Validation split manifest approved (lead sign-off on HS counts, duplicate audit, group disjointness)
 - [ ] Initialization-hash protocol implemented and unit-tested

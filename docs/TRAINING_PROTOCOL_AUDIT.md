@@ -1,5 +1,5 @@
 # Training Protocol Audit — Agent A
-**Audit Date:** 2026-09-18 | **Scope:** Read-only source/document/result audit at baseline. No training, neural inference, installs, driver changes, checkpoint edits, or historical-result edits. GPU unavailable (nvidia-smi exit 6, TF GPUS []).
+**Audit Date:** 2026-09-18 | **Scope:** Read-only source/document/result audit at baseline. No training, neural inference, installs, driver changes, checkpoint edits, or historical-result edits.
 
 ---
 

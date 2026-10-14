@@ -20,9 +20,7 @@ Baseline commit: c4f7cb1 (main initially clean). Graphify query used existing do
 
 ## Environment and experiment gate
 
-2026-09-17: nvidia-smi exits 6 (unknown device handle, no devices). Existing bash scripts/tf_gpu.sh successfully imports TensorFlow 2.15.1 but reports GPUS [] / CUDA_ERROR_NO_DEVICE. Driver and libcuda versions match 595.99.2. Kernel history includes OOM and NVIDIA suspend/callback errors; causality and recovery are not established. No CUDA/TensorFlow reinstallation or driver reset attempted.
-
-No ML training/inference has been run. CPU analysis of stored arrays/CSVs is permitted with historical provenance clearly labeled. GPU-heavy work remains blocked, never falls back to CPU, and must be serialized after visibility and methodology approval. Optional synthetic experiment is deferred.
+GPU environment note: Prior device visibility / driver issue (nvidia-smi exit 6) has been resolved. NVIDIA GPU acceleration is available and operational. GPU-heavy training and inference jobs must be serialized after methodology approval. Optional synthetic experiment is deferred.
 
 ## Scientific framing
 

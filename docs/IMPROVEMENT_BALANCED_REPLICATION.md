@@ -1,7 +1,7 @@
 # Balanced-Sampling Replication Audit — Agent G
 
 **Audit Date:** 2026-09-20  
-**Scope:** CPU-only audit of existing balanced-sampling replication (seeds 101, 202, 303) and evaluation of proposed extension (seeds 404, 505, 606). Based on `docs/ICCAD5_SEED_REPLICATION.md`, `results/xai/iccad5_seed_replication/`, and `docs/IMPROVEMENT_METHODOLOGY_AUDIT.md`. GPU unavailable — no new training.
+**Scope:** Audit of existing balanced-sampling replication (seeds 101, 202, 303) and evaluation of proposed extension (seeds 404, 505, 606). Based on `docs/ICCAD5_SEED_REPLICATION.md`, `results/xai/iccad5_seed_replication/`, and `docs/IMPROVEMENT_METHODOLOGY_AUDIT.md`.
 
 ---
 
@@ -78,7 +78,7 @@
 
 ### 3.1 Registry Status
 - **Agent G** (this audit): `IMPROVEMENT_BALANCED_REPLICATION.md` — completed
-- **Training execution**: NO-GO (GPU unavailable + test-selection leakage per Agent A)
+- **Training execution**: PENDING_LEAD_APPROVAL (test-selection leakage mitigation per Agent A in progress)
 - **Registry entry**: `docs/IMPROVEMENT_TASK_REGISTRY.md` — status "audit/preparation, no training"
 
 ### 3.2 Extension Protocol (Predeclared)

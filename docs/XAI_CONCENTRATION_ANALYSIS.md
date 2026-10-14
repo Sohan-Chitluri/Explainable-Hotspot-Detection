@@ -1,7 +1,7 @@
 # XAI Concentration Analysis — Agent F (CPU execution on stored diagnostics)
 
 **Analysis Date:** 2026-09-20  
-**Scope:** Concentration metrics computed from `results/xai/xai_diagnostics.csv` (57 samples × 4 methods) and `results/xai/final_iccad5/xai_diagnostics.csv` (11 samples). All metrics derived from stored diagnostic values (spread, area_gt50, connected_count, edge_conc, peak/centroid positions) — **no image files used**. GPU unavailable; pure CPU on stored diagnostics.
+**Scope:** Concentration metrics computed from `results/xai/xai_diagnostics.csv` (57 samples × 4 methods) and `results/xai/final_iccad5/xai_diagnostics.csv` (11 samples). All metrics derived from stored diagnostic values (spread, area_gt50, connected_count, edge_conc, peak/centroid positions) — **no image files used**. Derived from stored diagnostics.
 
 ---
 

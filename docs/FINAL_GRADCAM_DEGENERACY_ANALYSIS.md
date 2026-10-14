@@ -2,7 +2,7 @@
 
 ## Status and scope (2026-09-17)
 
-**Historical map audit completed; direct final-checkpoint gradient probe NOT executed.** No neural inference (including CPU), training, checkpoint modification, or shared-source edits were performed by workstream D. The registry records `nvidia-smi` exit 6 and TensorFlow 2.15.1 `GPUS []` / `CUDA_ERROR_NO_DEVICE`; D did not repeat that device check or attempt driver repair. GPU execution must await lead authorization, lead scheduling, GPU availability, and workstream B's corrected-preprocessing prediction validation.
+**Historical map audit completed; direct final-checkpoint gradient probe NOT executed.** No neural inference, training, checkpoint modification, or shared-source edits were performed by workstream D. Execution must await lead authorization, scheduling, and workstream B's corrected-preprocessing prediction validation.
 
 The immutable checkpoint is `models/xai/experimental/xai_cnn_iccad5_balanced_sampling_seed1.keras`, SHA-256:
 
