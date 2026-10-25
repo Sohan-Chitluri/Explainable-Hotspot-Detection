@@ -1,0 +1,118 @@
+% =========================================================================
+% Paper-Ready LaTeX Tables for OpenHSDBench Via-3 Experimental Study
+% Remediated and Synthesized by Workstream E4.3-B Pipeline
+% Reconciles Multi-Seed Classification (E2/E3) and XAI Robustness (E4.2/E4.3-A)
+% =========================================================================
+
+% Table 1: Multi-Seed Hotspot Classification Performance on Clean Held-Out Cohort (N=12,803, K=3 Seeds)
+\begin{table*}[t]
+\centering
+\caption{OpenHSDBench Via-3 Hotspot Classification Performance on Clean Held-Out Cohort ($N=12,803$ Layouts, $K=3$ Training Seeds). Metrics are evaluated at validation-calibrated operating thresholds $\tau^*$ tuned to maximize validation F1 score.}
+\label{tab:via3_classification_multiseed}
+\small
+\begin{tabular}{lcccccccc}
+\hline
+Training Strategy & Seeds ($K$) & Operating $\tau^*$ & PR-AUC & ROC-AUC & HS Recall & HS Precision & HS F1 Score & Bal Acc \\
+\hline
+\textbf{Baseline (Unweighted)} & $K=3$ & $0.0533 \pm 0.0379$ & $0.2749 \pm 0.0233$ & $0.7598 \pm 0.0234$ & $0.2384 \pm 0.0544$ & $0.4223 \pm 0.1301$ & $0.2934 \pm 0.0198$ & $0.6129 \pm 0.0236$ \\
+\quad \textit{Baseline Seed 42} & Single & 0.08 & 0.2518 & 0.7328 & 0.2214 & 0.3640 & 0.2753 & 0.6043 \\
+\quad \textit{Baseline Seed 100} & Single & 0.07 & 0.2983 & 0.7739 & 0.2993 & 0.3315 & 0.3146 & 0.6396 \\
+\quad \textit{Baseline Seed 2024} & Single & 0.01 & 0.2745 & 0.7728 & 0.1946 & 0.5714 & 0.2904 & 0.5949 \\
+\textbf{Balanced Sampling} & $K=3$ & $0.6767 \pm 0.1274$ & $0.2635 \pm 0.0476$ & $0.7760 \pm 0.0273$ & $0.2733 \pm 0.0112$ & $0.3680 \pm 0.1006$ & $0.3090 \pm 0.0392$ & $0.6281 \pm 0.0054$ \\
+\quad \textit{Balanced Seed 42} & Single & 0.76 & 0.2619 & 0.7840 & 0.2603 & 0.4038 & 0.3166 & 0.6238 \\
+\quad \textit{Balanced Seed 100} & Single & 0.74 & 0.2168 & 0.7456 & 0.2798 & 0.2544 & 0.2665 & 0.6263 \\
+\quad \textit{Balanced Seed 2024} & Single & 0.53 & 0.3120 & 0.7985 & 0.2798 & 0.4457 & 0.3438 & 0.6341 \\
+\hline
+\textbf{Paired Diff ($\Delta_{\text{Bal} - \text{Base}}$)} & $K=3$ & $+0.6233 \pm 0.0896$ & $-0.0114 \pm 0.0623$ & $+0.0162 \pm 0.0406$ & $+0.0349 \pm 0.0524$ & $-0.0543 \pm 0.0851$ & $+0.0156 \pm 0.0554$ & $+0.0152 \pm 0.0265$ \\
+\textit{Class-Weighted Control} & Single (42) & 0.50 & 0.1270 & 0.6864 & 0.1825 & 0.2500 & 0.2110 & 0.5822 \\
+\hline
+\multicolumn{9}{l}{\parbox{0.96\textwidth}{\vspace{2pt}\footnotesize{\textbf{Aggregation \& Unit Notes (ISSUE-MIN-02 Reconciled):} Multi-seed entries ($K=3$) report sample Mean $\pm$ SD ($ddof=1$) across the three independent training seeds (\texttt{42}, \texttt{100}, \texttt{2024}). The $N=12,803$ clean test layouts are evaluation observations, not independent training replicates; no statistical significance across seeds is claimed. Normal-theory Student's $t$ confidence intervals are omitted because bounded metrics violate Gaussian assumptions and yield unphysical negative lower bounds for baseline thresholds ($-0.0407$). \textbf{Default Threshold Note ($\tau=0.50$):} At standard uncalibrated $\tau=0.50$, Baseline Seed 2024 suffers catastrophic failure, detecting $0/411$ hotspots (Recall $=0.0\%$), whereas Balanced Sampling maintains Recall $\ge 27.98\%$ across all seeds. \textbf{Threshold Shift Note:} Operating threshold shift ($\bar{\tau}^* = 0.6767$ vs. $0.0533$) reflects the 50/50 artificial training prior, not Bayesian posterior probability calibration.}}} \\
+\end{tabular}
+\end{table*}
+
+% Table 2: Multi-Seed Paired XAI Faithfulness and Stability Comparison (N=50 Diagnostic Layouts, K=3 Seeds)
+\begin{table*}[t]
+\centering
+\caption{Multi-Seed Paired XAI Faithfulness and Stability Comparison across Six Checkpoints ($N=50$ Diagnostic Layouts, $K=3$ Seeds). All models target the pre-sigmoid logit $+z_{\text{HS}}$ at layer \texttt{conv2d\_5} (except Saliency [pixel space] and Occlusion [$32\times32$ window, stride $16\times16$]).}
+\label{tab:via3_xai_multiseed}
+\small
+\begin{tabular}{llcccc}
+\hline
+Attribution Method & Metric & Baseline ($K=3$) & Balanced ($K=3$) & Paired Diff ($\Delta$) & Seed Consistency \\
+\hline
+\textbf{Grad-CAM} & Insertion AUC $\uparrow$ & $0.3244 \pm 0.1159$ & $0.4789 \pm 0.1432$ & $+0.1545 \pm 0.1491$ & Inconsistent ($+0.1749, +0.2923, -0.0037$) \\
+ & Deletion AUC $\downarrow$ & $0.2014 \pm 0.0707$ & $0.3705 \pm 0.2042$ & $+0.1691 \pm 0.1762$ & Positive ($+0.1028, +0.3688, +0.0356$) \\
+ & Stability $\bar{\rho}$ ($\sigma=0.05$) $\uparrow$ & $0.8538 \pm 0.1885$ & $\mathbf{0.9505 \pm 0.0179}$ & $+0.0967 \pm 0.1776$ & Inconsistent ($-0.0002, -0.0114, +0.3017$) \\
+\hline
+\textbf{Grad-CAM++} & Insertion AUC $\uparrow$ & $0.2555 \pm 0.0986$ & $0.4103 \pm 0.1972$ & $+0.1547 \pm 0.1974$ & Inconsistent ($+0.1503, +0.3543, -0.0404$) \\
+ & Deletion AUC $\downarrow$ & $0.2583 \pm 0.0993$ & $0.4402 \pm 0.1208$ & $+0.1819 \pm 0.1538$ & Positive ($+0.0974, +0.3595, +0.0889$) \\
+ & Stability $\bar{\rho}$ ($\sigma=0.05$) $\uparrow$ & $\mathbf{0.2692 \pm 0.0401}$ & $\mathbf{0.1717 \pm 0.0799}$ & $-0.0975 \pm 0.1197$ & Inconsistent ($+0.0088, -0.2272, -0.0741$) \\
+\hline
+\textbf{LayerCAM} & Insertion AUC $\uparrow$ & $0.2489 \pm 0.0627$ & $0.4412 \pm 0.1828$ & $+0.1923 \pm 0.2047$ & Inconsistent ($+0.2512, +0.3610, -0.0354$) \\
+ & Deletion AUC $\downarrow$ & $0.2692 \pm 0.1351$ & $0.3922 \pm 0.1411$ & $+0.1230 \pm 0.1648$ & Positive ($+0.0258, +0.3133, +0.0299$) \\
+ & Stability $\bar{\rho}$ ($\sigma=0.05$) $\uparrow$ & $\mathbf{0.9556 \pm 0.0185}$ & $\mathbf{0.9554 \pm 0.0075}$ & $-0.0003 \pm 0.0170$ & Inconsistent ($-0.0041, +0.0183, -0.0150$) \\
+\hline
+\textbf{Gradient Saliency} & Insertion AUC $\uparrow$ & $0.1738 \pm 0.0851$ & $0.5308 \pm 0.1059$ & $+0.3570 \pm 0.0220$ & \textbf{Consistent Pos.} ($+0.3589, +0.3780, +0.3341$) \\
+ & Deletion AUC $\downarrow$ & $0.6854 \pm 0.1552$ & $0.5393 \pm 0.3544$ & $-0.1460 \pm 0.4328$ & Inconsistent ($-0.0737, +0.2460, -0.6104$) \\
+ & Stability $\bar{\rho}$ ($\sigma=0.05$) $\uparrow$ & $0.4338 \pm 0.0123$ & $0.4398 \pm 0.0203$ & $+0.0060 \pm 0.0169$ & Inconsistent ($+0.0046, +0.0236, -0.0102$) \\
+\hline
+\textbf{Occlusion ($32\times32$)} & Insertion AUC $\uparrow$ & $0.4362 \pm 0.0367$ & $\mathbf{0.8422 \pm 0.1034}$ & $+0.4060 \pm 0.1229$ & \textbf{Consistent Pos.} ($+0.4666, +0.4868, +0.2646$) \\
+ & Deletion AUC $\downarrow$ & $0.1633 \pm 0.0936$ & $\mathbf{0.1365 \pm 0.0989}$ & $-0.0268 \pm 0.1314$ & Inconsistent ($-0.1243, +0.1227, -0.0787$) \\
+ & Stability $\bar{\rho}$ ($\sigma=0.05$) $\uparrow$ & $0.6985 \pm 0.0534$ & $0.7404 \pm 0.0145$ & $+0.0419 \pm 0.0424$ & Inconsistent ($+0.0683, -0.0070, +0.0643$) \\
+\hline
+\textbf{Random Baseline} & Insertion AUC $\uparrow$ & $0.2655 \pm 0.0731$ & $0.5220 \pm 0.1097$ & $+0.2566 \pm 0.0859$ & \textbf{Consistent Pos.} ($+0.1858, +0.3521, +0.2318$) \\
+ & Deletion AUC $\downarrow$ & $0.2634 \pm 0.0762$ & $0.5187 \pm 0.1082$ & $+0.2553 \pm 0.0825$ & Positive ($+0.1848, +0.3460, +0.2352$) \\
+ & Stability $\bar{\rho}$ ($\sigma=0.05$) $\uparrow$ & N/A & N/A & N/A & Excluded (Pseudo-random control) \\
+\hline
+\multicolumn{6}{l}{\parbox{0.96\textwidth}{\vspace{2pt}\footnotesize{\textbf{Aggregation Unit Note (ISSUE-MIN-02 Reconciled):} Values denote sample Mean $\pm$ SD ($ddof=1$) across the $K=3$ training seeds. Per-seed components are means across the $N=50$ diagnostic layouts (40 HS / 10 NHS, stratified across 6 error modes; ISSUE-MAJ-01 reconciled). \textbf{Protocol Alignment Caveat (Occlusion Sensitivity):} Occlusion Sensitivity sliding-window perturbations ($32\times32$ zero-fill) share the identical perturbation mechanism as the insertion/deletion benchmark (progressive zero-fill), mechanically inflating its AUC scores; it is faithful under this progressive replacement protocol rather than universally best. \textbf{Random Baseline Dynamics:} Random baseline insertion differences ($0.5220$ vs. $0.2655$) reflect model sensitivity baseline shifts (mean predicted $P(\text{HS}) = 0.5744$ vs. $0.1795$), not attribution signal. \textbf{Stability Pathology:} Grad-CAM++ displays severe instability ($\bar{\rho} \le 0.31$) across all seeds, demonstrating incompatibility with lithographic inspection.}}} \\
+\end{tabular}
+\end{table*}
+
+% Table 3: Representation Collapse Diagnostics and CAM Spatial Dynamic Range
+\begin{table*}[t]
+\centering
+\caption{Multi-Seed Representation Collapse Diagnostics and Grad-CAM Spatial Contrast at Layer \texttt{conv2d\_5} ($N=50$ Layouts per Model Run, $K=3$ Seeds). Reconciles Table 4 typographical error (ISSUE-MIN-01) and distinguishes layout-level and seed-level standard deviations (ISSUE-MIN-02).}
+\label{tab:via3_collapse_diagnostics_multiseed}
+\small
+\begin{tabular}{lcccccc}
+\hline
+Model Strategy & Training Seed & Layouts ($N$) & Flat-CAM Count & Flat-CAM Rate & Spatial Std Dev (Mean $\pm$ SD) & Max Activation Mean \\
+\hline
+Baseline (Unweighted) & 42 & 50 & 0 & 0.0\% & $0.1568 \pm 0.0217$ & 1.0000 \\
+Baseline (Unweighted) & 100 & 50 & 2 & 4.0\% & $0.1724 \pm 0.0393$ & 0.9600 \\
+Baseline (Unweighted) & 2024 & 50 & 1 & 2.0\% & $0.0589 \pm 0.0132$ & 0.9800 \\
+\textbf{Baseline Pooled (Layout-Level)} & \textbf{All} & \textbf{150} & \textbf{3} & \textbf{2.0\%} & $\mathbf{0.1294 \pm 0.0571}$* & \textbf{0.9800} \\
+\textit{Baseline Cross-Seed (Seed-Level)} & $K=3$ & 3 Seeds & — & — & $0.1294 \pm 0.0615$\textdagger & — \\
+\hline
+Balanced Sampling & 42 & 50 & 0 & 0.0\% & $0.1587 \pm 0.0265$ & 1.0000 \\
+Balanced Sampling & 100 & 50 & 0 & 0.0\% & $0.1474 \pm 0.0273$ & 1.0000 \\
+Balanced Sampling & 2024 & 50 & 0 & 0.0\% & $0.1594 \pm 0.0275$ & 1.0000 \\
+\textbf{Balanced Pooled (Layout-Level)} & \textbf{All} & \textbf{150} & \textbf{0} & \textbf{0.0\%} & $\mathbf{0.1552 \pm 0.0275}$* & \textbf{1.0000} \\
+\textit{Balanced Cross-Seed (Seed-Level)} & $K=3$ & 3 Seeds & — & — & $0.1552 \pm 0.0067$\textdagger & — \\
+\hline
+Class-Weighted Control & Single (42) & 50 & 2 & 4.0\% & $0.0865 \pm 0.0246$ & 0.1307 \\
+\hline
+\multicolumn{7}{l}{\parbox{0.96\textwidth}{\vspace{2pt}\footnotesize{\textbf{*Typographical Reconciliation (ISSUE-MIN-01):} Earlier drafts reported $0.0589$ as the pooled baseline spatial standard deviation due to manual transcription duplication of the Seed 2024 spatial mean ($0.0589$). The verified sample standard deviation across all 150 layout observations ($ddof=1$) is $\mathbf{0.0571}$ (population $ddof=0$ is $0.0569$). \textbf{\textdagger Aggregation Unit Distinction (ISSUE-MIN-02):} Cross-seed standard deviation across the three seed means ($[0.1568, 0.1724, 0.0589]$ for baseline; $[0.1587, 0.1474, 0.1594]$ for balanced) is $0.0615$ ($ddof=1$) for baseline and $0.0067$ for balanced sampling. Individual seed rows report layout-level standard deviation ($N=50, ddof=1$). Balanced sampling completely prevents Flat-CAM collapse ($0/150$ vs. $3/150$) and prevents contrast collapse across all seeds.}}} \\
+\end{tabular}
+\end{table*}
+
+% Table 4: Model Parameter Randomization Sanity Check (Adebayo et al., 2018)
+\begin{table*}[t]
+\centering
+\caption{Model Parameter Randomization Sanity Check across Six Checkpoints ($K=3$ Seeds). Convolutional and dense weights were randomized with Gaussian noise $\mathcal{N}(0, 0.05)$ and evaluated across 5 diagnostic layouts (ISSUE-MAJ-03 Reconciled).}
+\label{tab:via3_adebayo_sanity_check}
+\small
+\begin{tabular}{lcccccc}
+\hline
+Model Strategy & Seed & Checkpoint & Mean Spearman $\bar{\rho}$ & Prespecified Rule ($|\bar{\rho}| < 0.20$) & Programmatic Status & Substantive Verdict \\
+\hline
+Baseline & 42 & \texttt{via3\_baseline\_seed42.keras} & $0.0000$ & Satisfied & \textbf{PASSED} & Weight Sensitive \\
+Baseline & 100 & \texttt{via3\_baseline\_seed100.keras} & $-0.3321$ & Exceeded ($|-0.3321| > 0.20$) & \textbf{FAILED (FLAGGED)} & Weight Sensitive (Substantive) \\
+Baseline & 2024 & \texttt{via3\_baseline\_seed2024.keras} & $0.0000$ & Satisfied & \textbf{PASSED} & Weight Sensitive \\
+Balanced Sampling & 42 & \texttt{via3\_balanced\_sampling\_seed42.keras} & $-0.1331$ & Satisfied & \textbf{PASSED} & Weight Sensitive \\
+Balanced Sampling & 100 & \texttt{via3\_balanced\_sampling\_seed100.keras} & $-0.0571$ & Satisfied & \textbf{PASSED} & Weight Sensitive \\
+Balanced Sampling & 2024 & \texttt{via3\_balanced\_sampling\_seed2024.keras} & $+0.0553$ & Satisfied & \textbf{PASSED} & Weight Sensitive \\
+\hline
+\multicolumn{7}{l}{\parbox{0.96\textwidth}{\vspace{2pt}\footnotesize{\textbf{Reconciliation of Sanity Check Rule (ISSUE-MAJ-03):} In the automated runner script (\texttt{run\_via3\_xai\_multiseed.py:436}), the programmatic check was defined as \texttt{bool(abs(adebayo\_mean\_rho) < 0.20)}. Under this prespecified criterion, 5 of 6 models passed, while Baseline Seed 100 recorded $\bar{\rho} = -0.3321$ and was flagged as \texttt{passed\_sanity\_check: false} in summary records. Although negative correlation confirms substantive weight sensitivity (attributions change rather than acting as invariant edge detectors), claiming 6/6 passed reflects post-hoc threshold relaxation ($|\bar{\rho}| \le 0.35$) rather than prespecified execution. Both programmatic status and substantive interpretation are documented.}}} \\
+\end{tabular}
+\end{table*}

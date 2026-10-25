@@ -48,6 +48,7 @@ def main():
             "lcam_is_zero": bool(np.all(lcam_res == 0.0)),
             "lcam_var": float(np.var(lcam_res)),
         })
+    OUT_XAI_CSV.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(cam_records).to_csv(OUT_XAI_CSV, index=False)
     print(f"XAI evaluations written to {OUT_XAI_CSV}")
 
@@ -69,6 +70,7 @@ def main():
                     "deletion_auc": curves[m]["deletion_auc"],
                     "insertion_auc": curves[m]["insertion_auc"]
                 })
+    OUT_FAITH_CSV.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(faith_records).to_csv(OUT_FAITH_CSV, index=False)
     print(f"Faithfulness metrics written to {OUT_FAITH_CSV}")
 

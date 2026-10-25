@@ -1,0 +1,45 @@
+{
+  "contract_version": "1.0.0",
+  "cohort_manifest_sha256": "1c547c162c32df2149653d68dc273511b866be81604d20b334a7306ffa5292cb",
+  "checkpoints": {
+    "baseline_seed42": "97a9cb8bf776b76b6ed1c0fe6a38b4de31138c97cfb64a1b29ff2f228a852887",
+    "baseline_seed100": "f28e4277738794a64d557fd5a5c3eeead32d32f8cbf08642ad135554746d3455",
+    "baseline_seed2024": "9347e568cbe59672f295bd3865bc9708d0a279ecd5c4e94ddf54a1b96cf5ae0d",
+    "balanced_sampling_seed42": "551a861f1e3537b93144edf22b5d2bc71456548ca576aea5a3781021fa8ac426",
+    "balanced_sampling_seed100": "c957304bf07a8aabf9a7861c4b2d5bf1c050c87bba0454ae4cbed9d086ef5815",
+    "balanced_sampling_seed2024": "297fa95748adc7a1234467cee898f14872942d5d4b1484e539bd1308f39b89e9"
+  },
+  "python_version": "3.11.16 (main, Sep  1 2026, 14:18:37) [Clang 22.1.3 ]",
+  "tensorflow_version": "2.15.1",
+  "numpy_version": "1.26.4",
+  "output_files": {
+    "master_faithfulness_metrics_csv": {
+      "path": "results/via3_experiments/xai_multiseed/master_faithfulness_metrics.csv",
+      "sha256": "0b49d2c414e54a7965b4d6c6d09e008f41385e40ef5d4cbbe810ad3228519ad0",
+      "rows": 1800
+    },
+    "master_stability_metrics_csv": {
+      "path": "results/via3_experiments/xai_multiseed/master_stability_metrics.csv",
+      "sha256": "fabbaee2eaeef5c4ea3f51fd64a40332492f5e94d6bb78158b9a2288135124aa",
+      "rows": 1500
+    },
+    "master_collapse_diagnostics_csv": {
+      "path": "results/via3_experiments/xai_multiseed/master_collapse_diagnostics.csv",
+      "sha256": "8db96f2daffb25c20ad36895468ead267c1e99a8b89ee112e9bb62892bd5bfc3",
+      "rows": 300
+    },
+    "multiseed_xai_comparison_summary_json": {
+      "path": "results/via3_experiments/xai_multiseed/multiseed_xai_comparison_summary.json",
+      "sha256": "7648d65b407ed6e54b14f455b2a761d999f390d8401b36bde2ad30d680cf95a5"
+    }
+  },
+  "random_seeds": {
+    "evaluation_seeds": [
+      42,
+      100,
+      2024
+    ],
+    "random_baseline_seed": 42,
+    "stability_perturbation_seed": 42
+  }
+}

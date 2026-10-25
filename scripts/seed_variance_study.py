@@ -1,4 +1,4 @@
-#!/home/peskybird/.local/bin/python3.11
+#!/usr/bin/env python3
 """
 Seed Variance Study for iccad1, iccad2, iccad5
 ==============================================

@@ -20,6 +20,7 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
+from src.occlusion import OcclusionSensitivity
 from src.xai_engine import XAIEngine
 
 
@@ -45,11 +46,14 @@ def compute_deletion_insertion_curves(
     }
     """
     # Baseline predictions
-    # Note: Target class 0 (HS) probability is 1 - sigmoid_output (since NHS=1)
     def get_prob(x_in):
         preds = model(x_in, training=False).numpy().flatten()
-        p_nhs = preds[0]
-        return 1.0 - p_nhs if target_idx == 0 else p_nhs
+        p_raw = float(preds[0])
+        if getattr(engine, "positive_class_is_1", False):
+            return p_raw if target_idx == 1 else (1.0 - p_raw)
+        else:
+            p_nhs = p_raw
+            return 1.0 - p_nhs if target_idx == 0 else p_nhs
 
     base_prob = get_prob(img_tensor)
     blank_canvas = np.zeros_like(img_tensor)
@@ -67,11 +71,17 @@ def compute_deletion_insertion_curves(
             _, cam, _ = engine.explain_gradcam_plus_plus(img_tensor, target_class=target_idx)
         elif method == "layercam":
             _, cam, _ = engine.explain_layercam(img_tensor, target_class=target_idx)
+        elif method == "saliency":
+            _, cam, _ = engine.explain_gradient_saliency(img_tensor, target_class=target_idx)
+        elif method == "occlusion":
+            occ = OcclusionSensitivity(engine, window_size=(32, 32), stride=(16, 16), baseline_value=0.0)
+            res_occ = occ.explain(img_tensor, target_class=target_idx)
+            cam = res_occ["norm_map"]
         elif method == "random":
             flat_indices = np.random.default_rng(seed=42).permutation(total_pixels)
             cam = None
         else:
-            continue
+            raise ValueError(f"Unsupported explanation method: {method}")
 
         # Sort pixel coordinates by attribution descending (if not random)
         if cam is not None:
