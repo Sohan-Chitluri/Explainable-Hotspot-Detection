@@ -45,8 +45,12 @@ class XAIEngine:
         model: tf.keras.Model,
         target_layer_name: Optional[str] = None,
         penultimate_layer_name: Optional[str] = None,
+        positive_class_is_1: bool = False,
+        threshold: float = 0.5,
     ):
         self.model = model
+        self.positive_class_is_1 = positive_class_is_1
+        self.threshold = threshold
         conv_layers = [
             l.name for l in model.layers if isinstance(l, tf.keras.layers.Conv2D)
         ]
@@ -66,6 +70,27 @@ class XAIEngine:
             inputs=[self.model.inputs],
             outputs=[target_layer.output, penult_layer.output, self.model.output],
         )
+
+    def _compute_target_score(self, penult_outputs: tf.Tensor, target_idx: int) -> tf.Tensor:
+        """Compute target logit score for attribution.
+
+        When positive_class_is_1=True (e.g. OpenHSDBench via-3):
+          - Model output sigmoid(z) represents P(HS=1).
+          - Pre-sigmoid logit z is the Hotspot logit.
+          - Target score for HS (1) is +z.
+          - Target score for NHS (0) is -z.
+
+        When positive_class_is_1=False (legacy ICCAD-12):
+          - Model output represents P(NHS=1).
+          - Pre-sigmoid logit z is the NHS logit.
+          - Target score for HS (0) is -z.
+          - Target score for NHS (1) is +z.
+        """
+        logit = get_pre_sigmoid_logit(self.model, penult_outputs)
+        if self.positive_class_is_1:
+            return logit if target_idx == 1 else -logit
+        else:
+            return -logit if target_idx == 0 else logit
 
     @classmethod
     def from_checkpoint(
@@ -114,17 +139,23 @@ class XAIEngine:
         else:
             raise TypeError(f"Unsupported image_input type: {type(image_input)}")
 
-        raw_rgb = np.array(pil_img.resize(target_size), dtype=np.uint8)
+        raw_rgb = np.array(pil_img.resize(target_size, resample=Image.Resampling.NEAREST), dtype=np.uint8)
         img_array = raw_rgb.astype(np.float32) / 255.0
         img_tensor = np.expand_dims(img_array, axis=0)
         return img_tensor, raw_rgb
 
     def predict(self, img_tensor: np.ndarray) -> Tuple[float, float, str, int]:
         preds = self.model(img_tensor, training=False).numpy()
-        p_nhs = float(preds[0, 0])
-        p_hs = float(1.0 - p_nhs)
-        pred_idx = 1 if p_nhs >= 0.5 else 0
-        pred_label = "NHS" if pred_idx == 1 else "HS"
+        if self.positive_class_is_1:
+            p_hs = float(preds[0, 0])
+            p_nhs = float(1.0 - p_hs)
+            pred_idx = 1 if p_hs >= self.threshold else 0
+            pred_label = "HS" if pred_idx == 1 else "NHS"
+        else:
+            p_nhs = float(preds[0, 0])
+            p_hs = float(1.0 - p_nhs)
+            pred_idx = 1 if p_nhs >= self.threshold else 0
+            pred_label = "NHS" if pred_idx == 1 else "HS"
         return p_hs, p_nhs, pred_label, pred_idx
 
     def _resolve_target_idx(self, img_tensor: np.ndarray, target_class: Union[str, int]) -> Tuple[int, str]:
@@ -133,15 +164,18 @@ class XAIEngine:
             t_str = target_class.upper()
             if t_str == "PREDICTED":
                 return pred_idx, pred_label
-            elif t_str in ["HS", "0", "HOTSPOT"]:
-                return 0, "HS"
-            elif t_str in ["NHS", "1", "NON-HOTSPOT", "NON_HOTSPOT"]:
-                return 1, "NHS"
+            elif t_str in ["HS", "HOTSPOT", "1" if self.positive_class_is_1 else "0"]:
+                return (1 if self.positive_class_is_1 else 0), "HS"
+            elif t_str in ["NHS", "NON-HOTSPOT", "NON_HOTSPOT", "0" if self.positive_class_is_1 else "1"]:
+                return (0 if self.positive_class_is_1 else 1), "NHS"
             else:
                 raise ValueError(f"Unknown target class: {target_class}")
         else:
             target_idx = int(target_class)
-            return target_idx, ("HS" if target_idx == 0 else "NHS")
+            if self.positive_class_is_1:
+                return target_idx, ("HS" if target_idx == 1 else "NHS")
+            else:
+                return target_idx, ("HS" if target_idx == 0 else "NHS")
 
     def explain_gradcam(
         self,
@@ -155,9 +189,7 @@ class XAIEngine:
 
         with tf.GradientTape() as tape:
             conv_outputs, penult_outputs, preds = self.sub_model(img_tensor, training=False)
-            logit_nhs = get_pre_sigmoid_logit(self.model, penult_outputs)
-            # HS score = -logit, NHS score = +logit
-            target_score = -logit_nhs if target_idx == 0 else logit_nhs
+            target_score = self._compute_target_score(penult_outputs, target_idx)
 
         grads = tape.gradient(target_score, conv_outputs)
         if grads is None:
@@ -184,40 +216,29 @@ class XAIEngine:
         """
         target_idx, target_name = self._resolve_target_idx(img_tensor, target_class)
 
-        with tf.GradientTape(persistent=True) as tape_grad2:
-            with tf.GradientTape() as tape_grad1:
-                conv_outputs, penult_outputs, preds = self.sub_model(img_tensor, training=False)
-                logit_nhs = get_pre_sigmoid_logit(self.model, penult_outputs)
-                target_score = -logit_nhs if target_idx == 0 else logit_nhs
-            grads_1 = tape_grad1.gradient(target_score, conv_outputs)
+        with tf.GradientTape() as tape:
+            conv_outputs, penult_outputs, preds = self.sub_model(img_tensor, training=False)
+            target_score = self._compute_target_score(penult_outputs, target_idx)
 
-        grads_2 = tape_grad2.gradient(grads_1, conv_outputs)
-        grads_3 = tape_grad2.gradient(grads_2, conv_outputs)
-        del tape_grad2
-
-        if grads_1 is None:
+        grads = tape.gradient(target_score, conv_outputs)
+        if grads is None:
             raise RuntimeError("Grad-CAM++ gradient computation failed.")
 
-        # Replace None with zeros if higher gradients vanish
-        if grads_2 is None:
-            grads_2 = tf.zeros_like(grads_1)
-        if grads_3 is None:
-            grads_3 = tf.zeros_like(grads_1)
-
         conv_out = conv_outputs[0]  # (H, W, C)
-        g1 = grads_1[0]
-        g2 = grads_2[0]
-        g3 = grads_3[0]
+        g = grads[0]                # (H, W, C)
 
-        # Grad-CAM++ alpha weighting:
-        # alpha_ij^k = g2 / (2 * g2 + sum(A * g3) + eps)
-        denom = 2.0 * g2 + tf.reduce_sum(conv_out * g3, axis=(0, 1), keepdims=True)
+        # Exact closed-form Grad-CAM++ formulation (Chattopadhay et al., WACV 2018, Eqs. 19-21):
+        g2 = tf.square(g)
+        g3 = tf.pow(g, 3)
+
+        sum_A_g3 = tf.reduce_sum(conv_out * g3, axis=(0, 1), keepdims=True)
+        denom = 2.0 * g2 + sum_A_g3
         denom = tf.where(denom != 0.0, denom, tf.ones_like(denom) * 1e-10)
         alphas = g2 / denom
 
-        # Channel weights: w_k = sum_i,j (alpha_ij^k * ReLU(g1_ij^k))
-        pos_g1 = tf.maximum(g1, 0.0)
-        weights = tf.reduce_sum(alphas * pos_g1, axis=(0, 1))
+        # Channel weights: w_k = sum_ij (alphas_ij^k * ReLU(g_ij^k))
+        pos_g = tf.maximum(g, 0.0)
+        weights = tf.reduce_sum(alphas * pos_g, axis=(0, 1))
 
         cam = conv_out @ weights[..., tf.newaxis]
         cam = tf.squeeze(cam)
@@ -239,8 +260,7 @@ class XAIEngine:
 
         with tf.GradientTape() as tape:
             conv_outputs, penult_outputs, preds = self.sub_model(img_tensor, training=False)
-            logit_nhs = get_pre_sigmoid_logit(self.model, penult_outputs)
-            target_score = -logit_nhs if target_idx == 0 else logit_nhs
+            target_score = self._compute_target_score(penult_outputs, target_idx)
 
         grads = tape.gradient(target_score, conv_outputs)
         if grads is None:
@@ -259,6 +279,36 @@ class XAIEngine:
         raw_map, resized_map = self._postprocess_cam(cam, img_tensor.shape[1:3])
         info = self._build_info_dict(img_tensor, target_idx, target_name, "LayerCAM")
         return raw_map, resized_map, info
+
+    def explain_gradient_saliency(
+        self,
+        img_tensor: np.ndarray,
+        target_class: Union[str, int] = "predicted",
+    ) -> Tuple[np.ndarray, np.ndarray, Dict]:
+        """
+        Vanilla Gradient Saliency (Simonyan et al., 2013).
+        Computes input-space gradients |d(target_score)/d(input)|.
+        """
+        target_idx, target_name = self._resolve_target_idx(img_tensor, target_class)
+        t_input = tf.convert_to_tensor(img_tensor, dtype=tf.float32)
+
+        with tf.GradientTape() as tape:
+            tape.watch(t_input)
+            conv_outputs, penult_outputs, preds = self.sub_model(t_input, training=False)
+            target_score = self._compute_target_score(penult_outputs, target_idx)
+
+        grads = tape.gradient(target_score, t_input)
+        if grads is None:
+            raise RuntimeError("Gradient saliency computation failed.")
+
+        saliency = tf.reduce_max(tf.abs(grads[0]), axis=-1)
+        max_v = tf.math.reduce_max(saliency)
+        if max_v > 0:
+            saliency = saliency / (max_v + 1e-10)
+
+        saliency_np = saliency.numpy().astype(np.float32)
+        info = self._build_info_dict(img_tensor, target_idx, target_name, "Gradient Saliency")
+        return saliency_np, saliency_np, info
 
     def _postprocess_cam(self, cam: tf.Tensor, target_hw: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
         max_v = tf.math.reduce_max(cam)

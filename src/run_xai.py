@@ -293,18 +293,21 @@ def process_benchmark(
             _, gcam_h, gcam_info = engine.explain_gradcam(img_tensor, target_class=target_name)
             gcam_overlay = engine.overlay_heatmap(raw_rgb, gcam_h, alpha=alpha, colormap=colormap)
             Image.fromarray(np.uint8(cmap(gcam_h)[:, :, :3] * 255)).save(sample_dir / f"{target_mode}_gradcam.png")
+            np.save(sample_dir / f"{target_mode}_gradcam.npy", gcam_h.astype(np.float32))
             Image.fromarray(gcam_overlay).save(sample_dir / f"{target_mode}_gradcam_overlay.png")
 
             # Grad-CAM++
             _, gcam_pp_h, _ = engine.explain_gradcam_plus_plus(img_tensor, target_class=target_name)
             gcam_pp_overlay = engine.overlay_heatmap(raw_rgb, gcam_pp_h, alpha=alpha, colormap=colormap)
             Image.fromarray(np.uint8(cmap(gcam_pp_h)[:, :, :3] * 255)).save(sample_dir / f"{target_mode}_gradcam_plus.png")
+            np.save(sample_dir / f"{target_mode}_gradcam_plus.npy", gcam_pp_h.astype(np.float32))
             Image.fromarray(gcam_pp_overlay).save(sample_dir / f"{target_mode}_gradcam_plus_overlay.png")
 
             # LayerCAM
             _, lcam_h, _ = engine.explain_layercam(img_tensor, target_class=target_name)
             lcam_overlay = engine.overlay_heatmap(raw_rgb, lcam_h, alpha=alpha, colormap=colormap)
             Image.fromarray(np.uint8(cmap(lcam_h)[:, :, :3] * 255)).save(sample_dir / f"{target_mode}_layercam.png")
+            np.save(sample_dir / f"{target_mode}_layercam.npy", lcam_h.astype(np.float32))
             Image.fromarray(lcam_overlay).save(sample_dir / f"{target_mode}_layercam_overlay.png")
 
             # Compute Diagnostics

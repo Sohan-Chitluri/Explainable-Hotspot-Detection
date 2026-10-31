@@ -1,0 +1,17 @@
+case_type,method,reported_median,recomputed_median,n
+TP,gradcam,0.412,0.412,15
+TP,gradcam_plus,0.263,0.263,15
+TP,layercam,0.347,0.347,15
+TP,occlusion,0.419,0.419,15
+TN,gradcam,0.027,0.027,15
+TN,gradcam_plus,0.153,0.153,15
+TN,layercam,0.226,0.226,15
+TN,occlusion,0.272,0.272,15
+FP,gradcam,0.416,0.416,15
+FP,gradcam_plus,0.337,0.337,15
+FP,layercam,0.387,0.387,15
+FP,occlusion,0.405,0.405,15
+FN,gradcam,0.109,0.109,12
+FN,gradcam_plus,0.205,0.205,12
+FN,layercam,0.265,0.265,12
+FN,occlusion,0.275,0.275,12

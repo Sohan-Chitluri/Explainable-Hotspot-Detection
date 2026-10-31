@@ -72,11 +72,19 @@ class GradCAM:
                 f"Layer '{self.target_layer_name}' not found in model: {e}"
             )
 
-        # Build submodel for gradient tracking
-        self.grad_model = tf.keras.models.Model(
+        # Resolve penultimate and output dense layers dynamically
+        layer_names = [l.name for l in model.layers]
+        penult_name = "dense_penultimate" if "dense_penultimate" in layer_names else "dense"
+        out_name = "dense_output" if "dense_output" in layer_names else "dense_1"
+        self.penultimate_layer = self.model.get_layer(penult_name)
+        self.dense_out_layer = self.model.get_layer(out_name)
+
+        # Build submodel once for gradient tracking
+        self.sub_model = tf.keras.models.Model(
             inputs=[self.model.inputs],
-            outputs=[target_layer.output, self.model.output],
+            outputs=[target_layer.output, self.penultimate_layer.output, self.model.output],
         )
+        self.grad_model = self.sub_model
 
     @classmethod
     def from_checkpoint(
@@ -181,18 +189,11 @@ class GradCAM:
 
         # Target score computation using pre-sigmoid logit to avoid vanishing gradients
         # from sigmoid saturation on high-confidence samples (Selvaraju et al., ICCV 2017).
-        penultimate_layer = self.model.get_layer("dense")
-        dense_1_layer = self.model.get_layer("dense_1")
-        w_dense1 = dense_1_layer.weights[0]
-        b_dense1 = dense_1_layer.weights[1]
+        w_dense1 = self.dense_out_layer.weights[0]
+        b_dense1 = self.dense_out_layer.weights[1]
 
         with tf.GradientTape() as tape:
-            # We track target conv layer and penultimate dense layer
-            sub_model = tf.keras.models.Model(
-                inputs=[self.model.inputs],
-                outputs=[self.grad_model.outputs[0], penultimate_layer.output, self.model.output],
-            )
-            conv_outputs, penult_outputs, predictions = sub_model(img_tensor, training=False)
+            conv_outputs, penult_outputs, predictions = self.sub_model(img_tensor, training=False)
             
             # Logit z for class NHS (1)
             logit_nhs = tf.matmul(penult_outputs, w_dense1) + b_dense1

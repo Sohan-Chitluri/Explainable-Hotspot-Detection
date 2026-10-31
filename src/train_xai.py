@@ -10,6 +10,22 @@ Key Features:
 - Evaluates test-set metrics (balanced accuracy, precision, recall, specificity, F1, confusion matrix).
 - Measures parameter count and inference latency.
 - Compares performance directly against the baseline model.
+
+Train/Val/Test split (leakage fix)
+-----------------------------------
+Previously ``dataset_analysis`` mapped ``validation_dir`` to the official ICCAD
+``test/`` folder, meaning ``BestBalancedAccuracyCheckpoint`` selected checkpoints
+using test-set metrics — a direct form of checkpoint-selection leakage.
+
+This script now uses ``make_three_way_split`` (``src/data.py``) which carves a
+stratified 15 % validation subset out of ``iccad{N}/train/`` (seed-fixed, stratified
+per class).  The callback and ``model.fit(validation_data=...)`` both see ONLY the
+val carve-out.  ``iccad{N}/test/`` is loaded separately as ``test_gen`` and used
+exactly once, after training, for the single reported final evaluation.
+
+See ``docs/THREE_WAY_SPLIT.md`` for the reproducibility record and per-benchmark
+counts.  The exact files assigned to each split are saved in each benchmark's
+``split_manifest.json`` alongside the other training artefacts.
 """
 
 from __future__ import annotations
@@ -28,7 +44,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-from src.data import data_extractor, dataset_analysis
+from src.data import make_three_way_split
 from src.metrics import (
     BestBalancedAccuracyCheckpoint,
     binary_metrics,
@@ -106,7 +122,12 @@ def parse_args():
 
 
 def compute_class_weights(counts: dict) -> dict[int, float]:
-    """Compute balanced class weights for training: n_samples / (2 * n_samples_class)."""
+    """Compute balanced class weights for training: n_samples / (2 * n_samples_class).
+
+    Uses the *original* train-dir counts (before the val carve-out) so that the
+    class weights reflect the true population ratio in the training corpus, not
+    the slightly-reduced post-split subset.
+    """
     n_hs = counts["train_hs"]
     n_nhs = counts["train_nhs"]
     total = n_hs + n_nhs
@@ -170,18 +191,33 @@ def train_one_benchmark(
     seed: int = 42,
 ) -> dict:
     epochs = BENCHMARK_EPOCHS[benchmark]
-    folder = str(data_root / f"iccad{benchmark}") + "/"
+    benchmark_name = f"iccad{benchmark}"
+    benchmark_dir = data_root / benchmark_name
     print("\n" + "=" * 76)
-    print(f"Training XAI CNN | Benchmark iccad{benchmark} | epochs={epochs} | seed={seed}")
+    print(f"Training XAI CNN | Benchmark {benchmark_name} | epochs={epochs} | seed={seed}")
     print("=" * 76)
 
-    train_dir, val_dir, counts = dataset_analysis(folder)
-    train_data_gen, val_data_gen = data_extractor(
-        train_dir, val_dir, batch_size=BATCH_SIZE
+    # ------------------------------------------------------------------ #
+    # Three-way split: train / val carve-out / test                       #
+    # val_gen  → BestBalancedAccuracyCheckpoint + model.fit validation   #
+    # test_gen → used ONCE post-training for reported final metrics only  #
+    # ------------------------------------------------------------------ #
+    split = make_three_way_split(
+        benchmark_dir,
+        benchmark_name,
+        val_frac=0.15,
+        seed=seed,
+        batch_size=BATCH_SIZE,
+        img_size=IMG_SIZE,
     )
+    train_gen = split.train_gen
+    val_gen = split.val_gen
+    test_gen = split.test_gen
+    counts = split.counts
+    split_manifest = split.split_manifest
 
     class_weights = compute_class_weights(counts)
-    print(f"Class distribution: {counts}")
+    print(f"Class distribution (original train dir): {counts}")
     print(f"Computed Class Weights: HS (0)={class_weights[0]:.3f}, NHS (1)={class_weights[1]:.3f}")
 
     model = build_xai_cnn(input_shape=(*IMG_SIZE, 3))
@@ -190,36 +226,40 @@ def train_one_benchmark(
 
     model.compile(optimizer=OPTIMIZER, loss=LOSS, metrics=TRAIN_METRICS)
 
-    # Train with class weights. BestBalancedAccuracyCheckpoint restores the best-epoch
-    # weights (by validation balanced accuracy) into `model` at the end of training, so
-    # the model.save() below persists the best epoch instead of the final epoch --
-    # see docs/ICCAD5_CHECKPOINT_FIX.md for why this matters.
+    # Train with class weights.
+    # BestBalancedAccuracyCheckpoint monitors val_gen (the 15 % carve-out of
+    # iccad{N}/train/) — NOT the official test set.  It restores the best-epoch
+    # weights into `model` at on_train_end, so model.save() below persists the
+    # best checkpoint rather than the final epoch.
+    # See docs/THREE_WAY_SPLIT.md and docs/ICCAD5_CHECKPOINT_FIX.md.
     best_ckpt_cb = BestBalancedAccuracyCheckpoint()
     history = model.fit(
-        train_data_gen,
+        train_gen,
         epochs=epochs,
-        validation_data=val_data_gen,
+        validation_data=val_gen,   # val carve-out only — not test/
         class_weight=class_weights,
         callbacks=[best_ckpt_cb],
     )
 
-    bench_dir = results_dir / f"iccad{benchmark}"
+    bench_dir = results_dir / benchmark_name
     bench_dir.mkdir(parents=True, exist_ok=True)
     models_dir.mkdir(parents=True, exist_ok=True)
 
     bal_train, bal_val = plot_balanced_accuracy_curves(
         history,
         bench_dir / "balanced_accuracy_vs_epoch.png",
-        title=f"iccad{benchmark} (XAI CNN): Balanced Accuracy vs Epoch",
+        title=f"{benchmark_name} (XAI CNN): Balanced Accuracy vs Epoch (val=carve-out)",
     )
 
-    # Evaluate test split
-    final_metrics, y_true, y_pred, probs = evaluate_xai_model(model, val_data_gen)
-    latency_info = measure_inference_speed(model, val_data_gen)
+    # ------------------------------------------------------------------ #
+    # Final evaluation: official test split, exactly once                 #
+    # ------------------------------------------------------------------ #
+    final_metrics, y_true, y_pred, probs = evaluate_xai_model(model, test_gen)
+    latency_info = measure_inference_speed(model, test_gen)
 
     final_metrics.update(
         {
-            "benchmark": f"iccad{benchmark}",
+            "benchmark": benchmark_name,
             "model_type": "xai_cnn",
             "epochs": epochs,
             "batch_size": BATCH_SIZE,
@@ -236,27 +276,42 @@ def train_one_benchmark(
             "history_val_balanced_accuracy": bal_val,
             "best_history_val_balanced_accuracy": float(max(bal_val)) if bal_val else None,
             "checkpoint_selection": {
-                "criterion": "best validation balanced accuracy (0.5*(sensitivity+specificity), "
-                             "from val_true_positives/val_true_negatives/val_false_positives/"
-                             "val_false_negatives; see BestBalancedAccuracyCheckpoint in src/metrics.py)",
+                "criterion": (
+                    "best validation balanced accuracy (0.5*(sensitivity+specificity)), "
+                    "computed from val_true_positives/val_true_negatives/"
+                    "val_false_positives/val_false_negatives logged by Keras on the "
+                    "val CARVE-OUT (15% of iccad{N}/train/, stratified per class, "
+                    "seed-fixed) — NOT on iccad{N}/test/. "
+                    "See BestBalancedAccuracyCheckpoint in src/metrics.py and "
+                    "docs/THREE_WAY_SPLIT.md."
+                ),
+                "val_set": "carve-out (iccad{N}/train/ subset)",
+                "val_set_n_hs": split_manifest["val_subset"]["n_hs"],
+                "val_set_n_nhs": split_manifest["val_subset"]["n_nhs"],
+                "val_frac": split_manifest["split_design"]["val_frac"],
+                "split_seed": split_manifest["split_design"]["seed"],
                 "selected_epoch": best_ckpt_cb.best_epoch,
                 "selected_epoch_val_balanced_accuracy": best_ckpt_cb.best_value,
+                "split_manifest_file": "split_manifest.json",
             },
         }
     )
+
+    with open(bench_dir / "split_manifest.json", "w", encoding="utf-8") as f:
+        json.dump(split_manifest, f, indent=2)
 
     save_metrics_json(final_metrics, bench_dir / "metrics.json")
     save_confusion_matrix_png(
         final_metrics,
         bench_dir / "confusion_matrix.png",
-        title=f"iccad{benchmark} (XAI CNN): Confusion Matrix (HS positive)",
+        title=f"{benchmark_name} (XAI CNN): Confusion Matrix (HS positive)",
     )
 
-    model_path = models_dir / f"xai_cnn_iccad{benchmark}.keras"
+    model_path = models_dir / f"xai_cnn_{benchmark_name}.keras"
     model.save(model_path)
     print(f"Saved XAI model -> {model_path}")
     print(
-        f"iccad{benchmark} (XAI) Balanced Acc: {final_metrics['balanced_accuracy']:.4f} | "
+        f"{benchmark_name} (XAI) Balanced Acc: {final_metrics['balanced_accuracy']:.4f} | "
         f"F1: {final_metrics['f1_score']:.4f} | Recall: {final_metrics['recall_sensitivity']:.4f} | "
         f"Spec: {final_metrics['specificity']:.4f} | Latency: {latency_info['ms_per_sample']} ms/sample"
     )

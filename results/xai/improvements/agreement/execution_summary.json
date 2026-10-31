@@ -1,0 +1,11 @@
+{
+  "cohort_counts": {
+    "original57": 57,
+    "final11": 11
+  },
+  "artifacts": 476,
+  "candidate_pairs": 612,
+  "defined_pairs": 0,
+  "metric_rows": 7344,
+  "status": "historical_agreement_blocked_missing_lossless_cam_maps"
+}

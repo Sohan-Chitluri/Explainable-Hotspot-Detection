@@ -1,0 +1,57 @@
+{
+  "scope": "CPU source and historical rendered-image identity audit; no inference or gradient measurements",
+  "samples": [
+    {
+      "sample_id": "NNHSCAD5999_6",
+      "source": "iccad-official/iccad5/test/test_nhs/NNHSCAD5999.png6.png",
+      "source_sha256": "f8c08925a7aefcb04b8d19098ca04e863d0cbeb559736e9cad7fc8cbe40925fb",
+      "source_shape": [
+        1200,
+        1200
+      ],
+      "saved_original_sha256": "5f940cc89ec14fa209461d50d81d5817f827f8247039caf92d847eff449e896c",
+      "gradcam_png_sha256": "f8891910fd33f5efecd0075ac3d5d9b1213276a582179ed3495b56decb5c0e77",
+      "gradcam_png_shape": [
+        224,
+        224,
+        3
+      ],
+      "gradcam_unique_rgb_count": 1,
+      "gradcam_first_rgb": [
+        0,
+        0,
+        127
+      ]
+    },
+    {
+      "sample_id": "NNHSCAD5999_9",
+      "source": "iccad-official/iccad5/test/test_nhs/NNHSCAD5999.png9.png",
+      "source_sha256": "f8c08925a7aefcb04b8d19098ca04e863d0cbeb559736e9cad7fc8cbe40925fb",
+      "source_shape": [
+        1200,
+        1200
+      ],
+      "saved_original_sha256": "5f940cc89ec14fa209461d50d81d5817f827f8247039caf92d847eff449e896c",
+      "gradcam_png_sha256": "f8891910fd33f5efecd0075ac3d5d9b1213276a582179ed3495b56decb5c0e77",
+      "gradcam_png_shape": [
+        224,
+        224,
+        3
+      ],
+      "gradcam_unique_rgb_count": 1,
+      "gradcam_first_rgb": [
+        0,
+        0,
+        127
+      ]
+    }
+  ],
+  "source_bytes_equal": true,
+  "source_decoded_equal": true,
+  "resized_rgb_pair_equal": {
+    "nearest": true,
+    "bicubic": true
+  },
+  "pillow_version": "12.3.0",
+  "numpy_version": "1.26.4"
+}
