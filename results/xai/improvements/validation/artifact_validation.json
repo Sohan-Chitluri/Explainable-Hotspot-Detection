@@ -1,0 +1,107 @@
+{
+  "baseline_files_checked": 1971,
+  "baseline_checkpoints_checked": 19,
+  "baseline_changes": [],
+  "new_artifacts_checked": [
+    {
+      "path": "results/xai/improvements/agreement/artifact_inventory.csv",
+      "rows": 476,
+      "blank_cells_requiring_semantic_review": 2108
+    },
+    {
+      "path": "results/xai/improvements/agreement/audit.json",
+      "json": "parsed"
+    },
+    {
+      "path": "results/xai/improvements/agreement/execution_summary.json",
+      "json": "parsed"
+    },
+    {
+      "path": "results/xai/improvements/agreement/pairwise_metrics.csv",
+      "rows": 7344,
+      "blank_cells_requiring_semantic_review": 7344
+    },
+    {
+      "path": "results/xai/improvements/agreement/provenance.csv",
+      "rows": 8,
+      "blank_cells_requiring_semantic_review": 0
+    },
+    {
+      "path": "results/xai/improvements/agreement/stratum_availability.csv",
+      "rows": 216,
+      "blank_cells_requiring_semantic_review": 0
+    },
+    {
+      "path": "results/xai/improvements/geometry_reanalysis/final11_exact_flag_counts.csv",
+      "rows": 17,
+      "blank_cells_requiring_semantic_review": 0
+    },
+    {
+      "path": "results/xai/improvements/geometry_reanalysis/paired_tests_top20.csv",
+      "rows": 64,
+      "blank_cells_requiring_semantic_review": 64
+    },
+    {
+      "path": "results/xai/improvements/geometry_reanalysis/plots/top20_geometry_fraction_by_case.png",
+      "image": "verified"
+    },
+    {
+      "path": "results/xai/improvements/geometry_reanalysis/report_crosscheck_top20.csv",
+      "rows": 16,
+      "blank_cells_requiring_semantic_review": 0
+    },
+    {
+      "path": "results/xai/improvements/geometry_reanalysis/stratum_counts.csv",
+      "rows": 26,
+      "blank_cells_requiring_semantic_review": 0
+    },
+    {
+      "path": "results/xai/improvements/geometry_reanalysis/summary.json",
+      "json": "parsed"
+    },
+    {
+      "path": "results/xai/improvements/preprocessing/prediction_pilot20.csv",
+      "rows": 20,
+      "blank_cells_requiring_semantic_review": 0
+    },
+    {
+      "path": "results/xai/improvements/preprocessing/prediction_pilot_summary.json",
+      "json": "parsed"
+    },
+    {
+      "path": "results/xai/improvements/preprocessing/summary.json",
+      "json": "parsed"
+    },
+    {
+      "path": "results/xai/improvements/preprocessing/tensor_comparison.csv",
+      "rows": 1219,
+      "blank_cells_requiring_semantic_review": 0
+    },
+    {
+      "path": "results/xai/improvements/weighted_replication/weighted_replication_audit.json",
+      "json": "parsed"
+    },
+    {
+      "path": "results/xai/final_iccad5/degeneracy_forensics/artifact_identity.json",
+      "json": "parsed"
+    },
+    {
+      "path": "results/xai/final_iccad5/degeneracy_forensics/historical_audit.json",
+      "json": "parsed"
+    }
+  ],
+  "syntax_checked": [
+    "scripts/improvements/agreement_analysis.py",
+    "scripts/improvements/degeneracy_forensics.py",
+    "scripts/improvements/enrichment_analysis.py",
+    "scripts/improvements/geometry_reanalysis.py",
+    "scripts/improvements/prediction_pilot20.py",
+    "scripts/improvements/preprocessing_comparison.py",
+    "scripts/improvements/validate_artifacts.py",
+    "scripts/improvements/weighted_replication.py",
+    "tests/test_preprocessing_legacy_diff.py",
+    "tests/test_xai_preprocessing.py"
+  ],
+  "errors": [],
+  "limitations": "Syntax is not runtime verification; blank cells require validity/reason review. GPU execution is not certified by this validator."
+}

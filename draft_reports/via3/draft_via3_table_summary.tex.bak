@@ -1,0 +1,71 @@
+% =========================================================================
+% Paper-Ready LaTeX Tables for OpenHSDBench Via-3 Experimental Study
+% Synthesized by Workstream D reporting pipeline
+% =========================================================================
+
+% Table 1: Classification Performance on Clean Held-Out Cohort (N=12,803)
+\begin{table*}[t]
+\centering
+\caption{OpenHSDBench Via-3 Hotspot Classification Performance on Clean Held-Out Cohort ($N=12,803$)}
+\label{tab:via3_classification}
+\small
+\begin{tabular}{lccccccc}
+\hline
+Training Strategy & Decision $\tau$ & PR-AUC & ROC-AUC & Recall & Precision & F1 Score & Bal Acc \\
+\hline
+Baseline (Unweighted) & 0.50 & 0.2518 & 0.7328 & 0.0925 & 0.8636 & 0.1670 & 0.5460 \\
+Baseline (Calibrated) & 0.08 & 0.2518 & 0.7328 & 0.2214 & 0.3640 & 0.2753 & 0.6043 \\
+Class-Weighted (Calibrated) & 0.50 & 0.1270 & 0.6864 & 0.1825 & 0.2500 & 0.2110 & 0.5822 \\
+Balanced Sampling (Default) & 0.50 & 0.2619 & 0.7840 & 0.3090 & 0.2714 & 0.2890 & 0.6407 \\
+Balanced Sampling (Calibrated) & 0.76 & 0.2619 & 0.7840 & 0.2603 & 0.4038 & 0.3166 & 0.6238 \\
+\hline
+\end{tabular}
+\end{table*}
+
+% Table 2: Paired XAI Faithfulness and Stability Comparison (N=50 Layouts)
+\begin{table*}[t]
+\centering
+\caption{Paired XAI Faithfulness and Stability Comparison: Baseline vs. Balanced Sampling ($N=50$ Layouts)}
+\label{tab:via3_xai_comparison}
+\small
+\begin{tabular}{llccccc}
+\hline
+Attribution Method & Metric & Baseline & Balanced & Paired Diff ($\Delta$) & Wilcoxon $p$ & Paired $t$ $p$ \\
+\hline
+Grad-CAM & Insertion AUC & 0.3393 & 0.6118 & +0.2726 & <0.0001 & <0.0001 \\
+ & Deletion AUC & 0.2744 & 0.3734 & +0.0991 & 0.0014 & 0.0019 \\
+ & Stability $\rho$ & 0.9328 & 0.9710 & +0.0383 & <0.0001 & <0.0001 \\
+Grad-CAM++ & Insertion AUC & 0.2854 & 0.5166 & +0.2312 & <0.0001 & <0.0001 \\
+ & Deletion AUC & 0.2714 & 0.4686 & +0.1972 & <0.0001 & <0.0001 \\
+ & Stability $\rho$ & 0.2760 & 0.2453 & -0.0307 & 0.5210 & 0.6572 \\
+LayerCAM & Insertion AUC & 0.2322 & 0.5528 & +0.3206 & <0.0001 & <0.0001 \\
+ & Deletion AUC & 0.3703 & 0.4506 & +0.0803 & 0.0023 & 0.0046 \\
+ & Stability $\rho$ & 0.9688 & 0.9638 & -0.0049 & 0.9771 & 0.4786 \\
+Gradient Saliency & Insertion AUC & 0.2007 & 0.5758 & +0.3752 & <0.0001 & <0.0001 \\
+ & Deletion AUC & 0.8061 & 0.7315 & -0.0746 & <0.0001 & <0.0001 \\
+ & Stability $\rho$ & 0.4313 & 0.4526 & +0.0213 & <0.0001 & <0.0001 \\
+Occlusion (32x32) & Insertion AUC & 0.4027 & 0.9208 & +0.5182 & <0.0001 & <0.0001 \\
+ & Deletion AUC & 0.2444 & 0.1470 & -0.0974 & <0.0001 & <0.0001 \\
+ & Stability $\rho$ & 0.7045 & 0.7444 & +0.0400 & 0.0196 & 0.0204 \\
+Random Baseline & Insertion AUC & 0.4183 & 0.5135 & +0.0952 & 0.0149 & 0.0110 \\
+ & Deletion AUC & 0.4170 & 0.5119 & +0.0949 & 0.0242 & 0.0137 \\
+\hline
+\end{tabular}
+\end{table*}
+
+% Table 3: Representation Collapse Diagnostics and Heatmap Dynamic Range
+\begin{table}[htbp]
+\centering
+\caption{Representation Collapse Diagnostics and Spatial Dynamic Range ($N=50$)}
+\label{tab:via3_collapse_diagnostics}
+\small
+\begin{tabular}{lccccc}
+\hline
+Strategy & Samples & Flat CAMs & Flat Rate & Spatial Std Dev & Max Std Dev \\
+\hline
+Baseline (Unweighted) & 50 & 0 & 0.0\% & $0.1166 \pm 0.022$ & 0.2009 \\
+Balanced Sampling & 50 & 0 & 0.0\% & $0.1587 \pm 0.026$ & 0.2269 \\
+Class-Weighted (Control) & 50 & 2 & 4.0\% & $0.0865 \pm 0.024$ & 0.1307 \\
+\hline
+\end{tabular}
+\end{table}

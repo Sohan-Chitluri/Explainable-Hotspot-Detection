@@ -1,0 +1,176 @@
+{
+  "provenance": "historical bicubic artifacts; NOT corrected-preprocessing results",
+  "degeneracy_proxy": "xai_diagnostics spread==0 per CAM method; occlusion has no stored spread proxy (unknown stratum)",
+  "main57_top20_rows": 228,
+  "stratum_counts": [
+    {
+      "case_type": "FN",
+      "method": "gradcam",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 7
+    },
+    {
+      "case_type": "FN",
+      "method": "gradcam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 5
+    },
+    {
+      "case_type": "FN",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 7
+    },
+    {
+      "case_type": "FN",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 5
+    },
+    {
+      "case_type": "FN",
+      "method": "layercam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 12
+    },
+    {
+      "case_type": "FN",
+      "method": "occlusion",
+      "degeneracy_stratum": "unknown_spread_not_stored",
+      "n_rows": 12
+    },
+    {
+      "case_type": "FP",
+      "method": "gradcam",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 2
+    },
+    {
+      "case_type": "FP",
+      "method": "gradcam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 13
+    },
+    {
+      "case_type": "FP",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 6
+    },
+    {
+      "case_type": "FP",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 9
+    },
+    {
+      "case_type": "FP",
+      "method": "layercam",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 2
+    },
+    {
+      "case_type": "FP",
+      "method": "layercam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 13
+    },
+    {
+      "case_type": "FP",
+      "method": "occlusion",
+      "degeneracy_stratum": "unknown_spread_not_stored",
+      "n_rows": 15
+    },
+    {
+      "case_type": "TN",
+      "method": "gradcam",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 6
+    },
+    {
+      "case_type": "TN",
+      "method": "gradcam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 9
+    },
+    {
+      "case_type": "TN",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 6
+    },
+    {
+      "case_type": "TN",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 9
+    },
+    {
+      "case_type": "TN",
+      "method": "layercam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 15
+    },
+    {
+      "case_type": "TN",
+      "method": "occlusion",
+      "degeneracy_stratum": "unknown_spread_not_stored",
+      "n_rows": 15
+    },
+    {
+      "case_type": "TP",
+      "method": "gradcam",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 3
+    },
+    {
+      "case_type": "TP",
+      "method": "gradcam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 12
+    },
+    {
+      "case_type": "TP",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 5
+    },
+    {
+      "case_type": "TP",
+      "method": "gradcam_plus",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 10
+    },
+    {
+      "case_type": "TP",
+      "method": "layercam",
+      "degeneracy_stratum": "degenerate_spread0",
+      "n_rows": 3
+    },
+    {
+      "case_type": "TP",
+      "method": "layercam",
+      "degeneracy_stratum": "nondegenerate",
+      "n_rows": 12
+    },
+    {
+      "case_type": "TP",
+      "method": "occlusion",
+      "degeneracy_stratum": "unknown_spread_not_stored",
+      "n_rows": 15
+    }
+  ],
+  "tpfp_flag_counts": {
+    "false": 282,
+    "true": 78
+  },
+  "final11_exact_flags": 2,
+  "family": "4 metrics x 4 methods x 4 case types, top-20% only, Holm within family",
+  "tests_computed": 64,
+  "limitations": [
+    "spread==0 is the stored diagnostic proxy for exact flatness (uint8-rounded), not a raw ptp re-derivation",
+    "occlusion degeneracy unknown in the main set; stratum reported, not imputed",
+    "n=57 historical, descriptive/exploratory; Holm only within the pre-declared family",
+    "flat-map rows retain arbitrary top-K masks in the source CSV; their overlap values are not attribution evidence"
+  ]
+}

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 """
 Full Grad-CAM extraction and explanation pipeline for ICCAD-12 benchmarks 1-5.
 

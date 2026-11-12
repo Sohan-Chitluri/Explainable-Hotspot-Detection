@@ -78,29 +78,60 @@ def save_metrics_json(metrics: dict, out_path: Path):
 
 
 def plot_balanced_accuracy_curves(history, out_path: Path, title: str):
-    """Notebook-style balanced accuracy vs epoch from Keras history metrics."""
-    ttpl = history.history["true_positives"]
-    ttnl = history.history["true_negatives"]
-    tfpl = history.history["false_positives"]
-    tfnl = history.history["false_negatives"]
-    vtpl = history.history["val_true_positives"]
-    vtnl = history.history["val_true_negatives"]
-    vfpl = history.history["val_false_positives"]
-    vfnl = history.history["val_false_negatives"]
+    """Notebook-style balanced accuracy vs epoch from Keras history metrics.
 
-    sensitivity = [ttpl[i] / (ttpl[i] + tfnl[i]) for i in range(len(tfnl))]
-    specificity = [ttnl[i] / (tfpl[i] + ttnl[i]) for i in range(len(tfnl))]
-    val_sensitivity = [vtpl[i] / (vtpl[i] + vfnl[i]) for i in range(len(vfnl))]
-    val_specificity = [vtnl[i] / (vfpl[i] + vtnl[i]) for i in range(len(vfnl))]
+    Note on Keras binary classification metrics:
+      Alphabetical folder ordering assigns 0 to 'train_hs'/'test_hs' (Hotspot)
+      and 1 to 'train_nhs'/'test_nhs' (Non-Hotspot).
+      Keras considers class 1 as positive, meaning:
+        - Keras TruePositives (tp): actual NHS predicted NHS
+        - Keras FalseNegatives (fn): actual NHS predicted HS
+        - Keras TrueNegatives (tn): actual HS predicted HS
+        - Keras FalsePositives (fp): actual HS predicted NHS
+      Therefore, Hotspot Sensitivity (HS Recall) = tn / (tn + fp),
+      and Hotspot Specificity (NHS Recall) = tp / (tp + fn).
+      Balanced Accuracy = 0.5 * (sensitivity + specificity).
+    """
+    h = history.history if hasattr(history, "history") else history
+    ttpl = h.get("true_positives", [])
+    ttnl = h.get("true_negatives", [])
+    tfpl = h.get("false_positives", [])
+    tfnl = h.get("false_negatives", [])
+    vtpl = h.get("val_true_positives", [])
+    vtnl = h.get("val_true_negatives", [])
+    vfpl = h.get("val_false_positives", [])
+    vfnl = h.get("val_false_negatives", [])
 
-    bal_acc = [(sensitivity[i] + specificity[i]) / 2 for i in range(len(sensitivity))]
+    n_train_epochs = min(len(ttpl), len(ttnl), len(tfpl), len(tfnl)) if (ttpl and ttnl and tfpl and tfnl) else 0
+    n_val_epochs = min(len(vtpl), len(vtnl), len(vfpl), len(vfnl)) if (vtpl and vtnl and vfpl and vfnl) else 0
+
+    sensitivity = [
+        ttnl[i] / (ttnl[i] + tfpl[i]) if (ttnl[i] + tfpl[i]) else 0.0
+        for i in range(n_train_epochs)
+    ]
+    specificity = [
+        ttpl[i] / (ttpl[i] + tfnl[i]) if (ttpl[i] + tfnl[i]) else 0.0
+        for i in range(n_train_epochs)
+    ]
+    val_sensitivity = [
+        vtnl[i] / (vtnl[i] + vfpl[i]) if (vtnl[i] + vfpl[i]) else 0.0
+        for i in range(n_val_epochs)
+    ]
+    val_specificity = [
+        vtpl[i] / (vtpl[i] + vfnl[i]) if (vtpl[i] + vfnl[i]) else 0.0
+        for i in range(n_val_epochs)
+    ]
+
+    bal_acc = [(sensitivity[i] + specificity[i]) / 2 for i in range(n_train_epochs)]
     bal_acc_val = [
-        (val_sensitivity[i] + val_specificity[i]) / 2 for i in range(len(val_sensitivity))
+        (val_sensitivity[i] + val_specificity[i]) / 2 for i in range(n_val_epochs)
     ]
 
     plt.figure(figsize=(7, 4))
-    plt.plot(bal_acc, label="Balanced Accuracy (training)")
-    plt.plot(bal_acc_val, label="Balanced Accuracy (validation)")
+    if bal_acc:
+        plt.plot(bal_acc, label="Balanced Accuracy (training)")
+    if bal_acc_val:
+        plt.plot(bal_acc_val, label="Balanced Accuracy (validation)")
     plt.xlabel("Epoch")
     plt.ylabel("Balanced Accuracy")
     plt.legend(loc="lower right")
@@ -121,12 +152,14 @@ class BestBalancedAccuracyCheckpoint(tf.keras.callbacks.Callback):
     Balanced accuracy is computed epoch-by-epoch as 0.5 * (sensitivity + specificity)
     from Keras's native `val_true_positives` / `val_true_negatives` / `val_false_positives`
     / `val_false_negatives` metrics already present in `TRAIN_METRICS`
-    (src/train_xai.py) -- the identical formula already used post-hoc by
-    `plot_balanced_accuracy_curves` above, just evaluated live per epoch instead of only
-    after training completes. No new metric is defined or compiled.
+    (src/train_xai.py) -- evaluated live per epoch.
+
+    Class 0 is Hotspot (HS), Class 1 is Non-Hotspot (NHS):
+      - Hotspot sensitivity (recall of class 0) = tn / (tn + fp)
+      - Hotspot specificity (recall of class 1) = tp / (tp + fn)
 
     At `on_train_end`, the model's weights are reset to the best epoch's weights, so the
-    caller's existing `model.save(...)` call (unchanged) persists the best checkpoint
+    caller's existing `model.save(...)` call persists the best checkpoint
     rather than the final epoch. Ties keep the earliest epoch (strict `>` comparison).
     """
 
@@ -144,8 +177,10 @@ class BestBalancedAccuracyCheckpoint(tf.keras.callbacks.Callback):
         fn = logs.get("val_false_negatives")
         if None in (tp, tn, fp, fn):
             return
-        sensitivity = tp / (tp + fn) if (tp + fn) else 0.0
-        specificity = tn / (tn + fp) if (tn + fp) else 0.0
+        # Hotspot (class 0) sensitivity = tn / (tn + fp)
+        # Hotspot (class 0) specificity = tp / (tp + fn)
+        sensitivity = tn / (tn + fp) if (tn + fp) else 0.0
+        specificity = tp / (tp + fn) if (tp + fn) else 0.0
         bal_acc = 0.5 * (sensitivity + specificity)
         if bal_acc > self.best_value:
             self.best_value = bal_acc

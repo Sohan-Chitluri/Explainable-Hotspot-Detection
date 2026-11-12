@@ -1,0 +1,3 @@
+AUTHORIZED_BY_HUMAN_OPERATOR: 2026-10-21T15:25:00Z
+PURPOSE: Baseline via-3 training experiment execution
+RUNNER: scripts/run_via3_baseline.py

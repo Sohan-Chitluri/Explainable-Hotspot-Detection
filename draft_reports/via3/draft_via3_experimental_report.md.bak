@@ -1,0 +1,72 @@
+# Via-3 Hotspot Classification & XAI: Experimental Pipeline Report
+
+
+## 1. Classification Performance on Clean Held-Out Cohort ($N=12,803$)
+
+| Strategy / Condition | Decision Threshold ($\tau$) | PR-AUC | ROC-AUC | HS Recall | HS Precision | HS F1 Score | Bal Acc |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Baseline (Unweighted) | 0.50 | 0.2518 | 0.7328 | 0.0925 | 0.8636 | 0.1670 | 0.5460 |
+| Baseline (Calibrated) | 0.08 | 0.2518 | 0.7328 | 0.2214 | 0.3640 | 0.2753 | 0.6043 |
+| Class-Weighted (Calibrated) | 0.50 | 0.1270 | 0.6864 | 0.1825 | 0.2500 | 0.2110 | 0.5822 |
+| Balanced Sampling (Default) | 0.50 | 0.2619 | 0.7840 | 0.3090 | 0.2714 | 0.2890 | 0.6407 |
+| Balanced Sampling (Calibrated) | 0.76 | 0.2619 | 0.7840 | 0.2603 | 0.4038 | 0.3166 | 0.6238 |
+
+## 2. Multi-Seed Statistical Variance & Verification Status
+
+| Strategy | Metric | Mean | Std Dev | 95% Confidence Interval | Status |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| Baseline (Seed 42) | PR-AUC | 0.2518 | N/A (Single Seed) | [0.2518, 0.2518] | Audited Reference Run |
+| Baseline (Seed 42) | ROC-AUC | 0.7328 | N/A (Single Seed) | [0.7328, 0.7328] | Audited Reference Run |
+| Balanced Sampling (Seed 42) | PR-AUC | 0.2619 | N/A (Single Seed) | [0.2619, 0.2619] | Audited Reference Run |
+| Balanced Sampling (Seed 42) | ROC-AUC | 0.7840 | N/A (Single Seed) | [0.7840, 0.7840] | Audited Reference Run |
+
+> [!NOTE]
+> Multi-seed execution across seeds `[42, 100, 2024]` is verified in dry-run standby mode.
+> The primary benchmark results reported here reflect the audited Seed 42 reference models.
+
+## 3. XAI Faithfulness and Stability Comparison ($N=50$ Paired Layouts)
+
+| Attribution Method | Metric | Baseline Mean | Balanced Sampling Mean | Paired Difference ($\Delta$) | Wilcoxon $p$-value | Paired $t$-test $p$-value |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **Grad-CAM** | Insertion AUC $\uparrow$ | 0.3393 | 0.6118 | +0.2726 | <0.0001 | <0.0001 |
+| | Deletion AUC $\downarrow$ | 0.2744 | 0.3734 | +0.0991 | 0.0014 | 0.0019 |
+| | Stability $\rho$ ($\sigma=0.05$) $\uparrow$ | 0.9328 | 0.9710 | +0.0383 | <0.0001 | <0.0001 |
+| **Grad-CAM++** | Insertion AUC $\uparrow$ | 0.2854 | 0.5166 | +0.2312 | <0.0001 | <0.0001 |
+| | Deletion AUC $\downarrow$ | 0.2714 | 0.4686 | +0.1972 | <0.0001 | <0.0001 |
+| | Stability $\rho$ ($\sigma=0.05$) $\uparrow$ | 0.2760 | 0.2453 | -0.0307 | 0.5210 | 0.6572 |
+| **LayerCAM** | Insertion AUC $\uparrow$ | 0.2322 | 0.5528 | +0.3206 | <0.0001 | <0.0001 |
+| | Deletion AUC $\downarrow$ | 0.3703 | 0.4506 | +0.0803 | 0.0023 | 0.0046 |
+| | Stability $\rho$ ($\sigma=0.05$) $\uparrow$ | 0.9688 | 0.9638 | -0.0049 | 0.9771 | 0.4786 |
+| **Gradient Saliency** | Insertion AUC $\uparrow$ | 0.2007 | 0.5758 | +0.3752 | <0.0001 | <0.0001 |
+| | Deletion AUC $\downarrow$ | 0.8061 | 0.7315 | -0.0746 | <0.0001 | <0.0001 |
+| | Stability $\rho$ ($\sigma=0.05$) $\uparrow$ | 0.4313 | 0.4526 | +0.0213 | <0.0001 | <0.0001 |
+| **Occlusion (32x32)** | Insertion AUC $\uparrow$ | 0.4027 | 0.9208 | +0.5182 | <0.0001 | <0.0001 |
+| | Deletion AUC $\downarrow$ | 0.2444 | 0.1470 | -0.0974 | <0.0001 | <0.0001 |
+| | Stability $\rho$ ($\sigma=0.05$) $\uparrow$ | 0.7045 | 0.7444 | +0.0400 | 0.0196 | 0.0204 |
+| **Random Baseline** | Insertion AUC $\uparrow$ | 0.4183 | 0.5135 | +0.0952 | 0.0149 | 0.0110 |
+| | Deletion AUC $\downarrow$ | 0.4170 | 0.5119 | +0.0949 | 0.0242 | 0.0137 |
+
+## 4. Representation Collapse & Spatial Dynamic Range
+
+| Model Architecture / Strategy | Evaluated Samples | Flat CAM Count | Flat CAM Rate | Mean Spatial Std Dev | Max Spatial Std Dev |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Baseline (Unweighted) | 50 | 0 | 0.0% | 0.1166 ± 0.0229 | 0.2009 |
+| Balanced Sampling | 50 | 0 | 0.0% | 0.1587 ± 0.0265 | 0.2269 |
+| Class-Weighted (Control) | 50 | 2 | 4.0% | 0.0865 ± 0.0246 | 0.1307 |
+
+## 5. Model Parameter Randomization Sanity Check (Adebayo et al., 2018)
+
+- **Randomization Protocol:** Full parameter randomization of all convolutional and dense layers of the custom CNN with Gaussian noise $\mathcal{N}(0, 0.05)$.
+- **Evaluated Checkpoint:** `models/via3/via3_baseline_seed42.keras` across 5 representative layout samples.
+- **Mean Spearman Rank Correlation:** $\bar{\rho} = -0.0486$ (Threshold for passing: $|\rho| < 0.20$).
+- **Verdict:** **PASSED.** Explanations collapse under randomized weights, confirming that heatmap attributions depend strictly on learned neural network parameters.
+
+## 6. Mandatory Methodological & Statistical Qualifications
+
+To ensure documentation integrity and scientific rigor, downstream manuscripts and reports must incorporate the following five audited qualifications established in `XAI_METHODOLOGY_AUDIT.md`:
+
+1. **Perturbation Sensitivity vs. Causal Sufficiency:** Pixel insertion/deletion measures model score sensitivity under progressive zero-masking, not Pearlian causal sufficiency or physical defect necessity. Claims must refer to *attribution faithfulness under progressive pixel replacement* rather than causal feature isolation.
+2. **Out-of-Distribution (OOD) Blank Canvas Rebound:** An all-zero image ($224 \times 224 \times 3$) is out-of-distribution for the custom CNN, producing high baseline sigmoid probabilities ($P(\text{HS}) = 0.9998$ on baseline, $0.9433$ on balanced sampling) due to convolutional biases and lack of negative activations. Consequently, deletion curves exhibit a U-shaped rebound as masking approaches $100\%$, and insertion curves start at elevated values before dropping on initial patch entry.
+3. **Probability Baseline Asymmetry in Deletion AUC:** Because unnormalized probabilities are integrated directly without baseline normalization, models with low initial confidence on missed hotspots (e.g. baseline predicting $P(\text{HS}) = 0.0213$ on `balanced_won`) mechanically achieve artificially lower Deletion AUCs simply because their curves are bounded by low initial values.
+4. **Diagnostic Cohort vs. Population Generalization:** The $N=50$ evaluation cohort is a stratified diagnostic sample designed to contrast error and recovery modes (`shared_tp`, `shared_fn`, `balanced_won`, `baseline_won`), not an i.i.d. population sample. Paired p-values confirm strong differences within this diagnostic cohort but must not be claimed as unconditional population-wide averages.
+5. **Sanity Check Scope:** Parameter randomization was executed on 5 baseline samples ($\bar{\rho} = -0.0486$), confirming weight dependence. However, label randomization was *not* executed, and weights were randomized across all layers simultaneously rather than via cascading layer-wise ablation.

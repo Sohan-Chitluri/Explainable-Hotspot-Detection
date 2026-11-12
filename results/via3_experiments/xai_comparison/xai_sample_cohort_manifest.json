@@ -1,0 +1,402 @@
+[
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia87665_mb_mb_lccout.oas.gds.png",
+    "index": 2052,
+    "ground_truth": 1,
+    "baseline_prob": 0.437566,
+    "balanced_prob": 0.99459
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia56664_mb_mb_lccout.oas.gds.png",
+    "index": 9072,
+    "ground_truth": 1,
+    "baseline_prob": 0.096092,
+    "balanced_prob": 0.885826
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia98981_mb_mb_lccout.oas.gds.png",
+    "index": 1894,
+    "ground_truth": 1,
+    "baseline_prob": 0.135549,
+    "balanced_prob": 0.807553
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia73565_mb_mb_lccout.oas.gds.png",
+    "index": 7918,
+    "ground_truth": 1,
+    "baseline_prob": 0.146827,
+    "balanced_prob": 0.965108
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia84821_mb_mb_lccout.oas.gds.png",
+    "index": 5891,
+    "ground_truth": 1,
+    "baseline_prob": 0.842752,
+    "balanced_prob": 0.997286
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia3013_mb_mb_lccout.oas.gds.png",
+    "index": 11556,
+    "ground_truth": 1,
+    "baseline_prob": 0.34665,
+    "balanced_prob": 0.86822
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia70440_mb_mb_lccout.oas.gds.png",
+    "index": 8872,
+    "ground_truth": 1,
+    "baseline_prob": 0.307404,
+    "balanced_prob": 0.993284
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia19934_mb_mb_lccout.oas.gds.png",
+    "index": 2095,
+    "ground_truth": 1,
+    "baseline_prob": 0.669821,
+    "balanced_prob": 0.958389
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia76076_mb_mb_lccout.oas.gds.png",
+    "index": 3164,
+    "ground_truth": 1,
+    "baseline_prob": 0.64264,
+    "balanced_prob": 0.974416
+  },
+  {
+    "cohort": "shared_tp",
+    "filename": "Hvia56645_mb_mb_lccout.oas.gds.png",
+    "index": 10157,
+    "ground_truth": 1,
+    "baseline_prob": 0.790997,
+    "balanced_prob": 0.890773
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia95457_mb_mb_lccout.oas.gds.png",
+    "index": 10548,
+    "ground_truth": 1,
+    "baseline_prob": 0.005286,
+    "balanced_prob": 0.452484
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia75_mb_mb_lccout.oas.gds.png",
+    "index": 5975,
+    "ground_truth": 1,
+    "baseline_prob": 0.016568,
+    "balanced_prob": 0.638932
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia79205_mb_mb_lccout.oas.gds.png",
+    "index": 5519,
+    "ground_truth": 1,
+    "baseline_prob": 0.028444,
+    "balanced_prob": 0.065853
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia45360_mb_mb_lccout.oas.gds.png",
+    "index": 8783,
+    "ground_truth": 1,
+    "baseline_prob": 0.039309,
+    "balanced_prob": 0.549582
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia2574_mb_mb_lccout.oas.gds.png",
+    "index": 11050,
+    "ground_truth": 1,
+    "baseline_prob": 0.007305,
+    "balanced_prob": 0.05654
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia21139_mb_mb_lccout.oas.gds.png",
+    "index": 2625,
+    "ground_truth": 1,
+    "baseline_prob": 0.017993,
+    "balanced_prob": 0.118256
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia107173_mb_mb_lccout.oas.gds.png",
+    "index": 6418,
+    "ground_truth": 1,
+    "baseline_prob": 0.007717,
+    "balanced_prob": 0.00911
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia50988_mb_mb_lccout.oas.gds.png",
+    "index": 6773,
+    "ground_truth": 1,
+    "baseline_prob": 0.002549,
+    "balanced_prob": 0.004716
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia29970_mb_mb_lccout.oas.gds.png",
+    "index": 7477,
+    "ground_truth": 1,
+    "baseline_prob": 0.006953,
+    "balanced_prob": 0.191147
+  },
+  {
+    "cohort": "shared_fn",
+    "filename": "Hvia109664_mb_mb_lccout.oas.gds.png",
+    "index": 11976,
+    "ground_truth": 1,
+    "baseline_prob": 0.003132,
+    "balanced_prob": 0.002724
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia87666_mb_mb_lccout.oas.gds.png",
+    "index": 10436,
+    "ground_truth": 1,
+    "baseline_prob": 0.030681,
+    "balanced_prob": 0.911725
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia57140_mb_mb_lccout.oas.gds.png",
+    "index": 5590,
+    "ground_truth": 1,
+    "baseline_prob": 0.078439,
+    "balanced_prob": 0.946921
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia107181_mb_mb_lccout.oas.gds.png",
+    "index": 2057,
+    "ground_truth": 1,
+    "baseline_prob": 0.011792,
+    "balanced_prob": 0.964629
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia40905_mb_mb_lccout.oas.gds.png",
+    "index": 3905,
+    "ground_truth": 1,
+    "baseline_prob": 0.025815,
+    "balanced_prob": 0.959597
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia65058_mb_mb_lccout.oas.gds.png",
+    "index": 3263,
+    "ground_truth": 1,
+    "baseline_prob": 0.056787,
+    "balanced_prob": 0.974109
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia58698_mb_mb_lccout.oas.gds.png",
+    "index": 1257,
+    "ground_truth": 1,
+    "baseline_prob": 0.026139,
+    "balanced_prob": 0.787803
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia98464_mb_mb_lccout.oas.gds.png",
+    "index": 4327,
+    "ground_truth": 1,
+    "baseline_prob": 0.034322,
+    "balanced_prob": 0.957441
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia52432_mb_mb_lccout.oas.gds.png",
+    "index": 11206,
+    "ground_truth": 1,
+    "baseline_prob": 0.005773,
+    "balanced_prob": 0.869418
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia109996_mb_mb_lccout.oas.gds.png",
+    "index": 11461,
+    "ground_truth": 1,
+    "baseline_prob": 0.049161,
+    "balanced_prob": 0.974684
+  },
+  {
+    "cohort": "balanced_won",
+    "filename": "Hvia95751_mb_mb_lccout.oas.gds.png",
+    "index": 1221,
+    "ground_truth": 1,
+    "baseline_prob": 0.012361,
+    "balanced_prob": 0.811411
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia115940_mb_mb_lccout.oas.gds.png",
+    "index": 10645,
+    "ground_truth": 1,
+    "baseline_prob": 0.912782,
+    "balanced_prob": 0.226968
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia107502_mb_mb_lccout.oas.gds.png",
+    "index": 11191,
+    "ground_truth": 1,
+    "baseline_prob": 0.120899,
+    "balanced_prob": 0.062796
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia96141_mb_mb_lccout.oas.gds.png",
+    "index": 7922,
+    "ground_truth": 1,
+    "baseline_prob": 0.088391,
+    "balanced_prob": 0.044357
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia104591_mb_mb_lccout.oas.gds.png",
+    "index": 11646,
+    "ground_truth": 1,
+    "baseline_prob": 0.14792,
+    "balanced_prob": 0.461816
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia48191_mb_mb_lccout.oas.gds.png",
+    "index": 6868,
+    "ground_truth": 1,
+    "baseline_prob": 0.088293,
+    "balanced_prob": 0.133069
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia110324_mb_mb_lccout.oas.gds.png",
+    "index": 4908,
+    "ground_truth": 1,
+    "baseline_prob": 0.149105,
+    "balanced_prob": 0.670635
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia22816_mb_mb_lccout.oas.gds.png",
+    "index": 3499,
+    "ground_truth": 1,
+    "baseline_prob": 0.089852,
+    "balanced_prob": 0.539271
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia65108_mb_mb_lccout.oas.gds.png",
+    "index": 12580,
+    "ground_truth": 1,
+    "baseline_prob": 0.118381,
+    "balanced_prob": 0.254254
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia22724_mb_mb_lccout.oas.gds.png",
+    "index": 564,
+    "ground_truth": 1,
+    "baseline_prob": 0.101318,
+    "balanced_prob": 0.746023
+  },
+  {
+    "cohort": "baseline_won",
+    "filename": "Hvia169_mb_mb_lccout.oas.gds.png",
+    "index": 7453,
+    "ground_truth": 1,
+    "baseline_prob": 0.875176,
+    "balanced_prob": 0.202955
+  },
+  {
+    "cohort": "shared_tn",
+    "filename": "Nvia70158_mb_mb_lccout.oas.gds.png",
+    "index": 8573,
+    "ground_truth": 0,
+    "baseline_prob": 0.014672,
+    "balanced_prob": 0.041566
+  },
+  {
+    "cohort": "shared_tn",
+    "filename": "Nvia76592_mb_mb_lccout.oas.gds.png",
+    "index": 2887,
+    "ground_truth": 0,
+    "baseline_prob": 0.031089,
+    "balanced_prob": 0.031953
+  },
+  {
+    "cohort": "shared_tn",
+    "filename": "Nvia89959_mb_mb_lccout.oas.gds.png",
+    "index": 12036,
+    "ground_truth": 0,
+    "baseline_prob": 0.00425,
+    "balanced_prob": 0.003067
+  },
+  {
+    "cohort": "shared_tn",
+    "filename": "Nvia13460_mb_mb_lccout.oas.gds.png",
+    "index": 4204,
+    "ground_truth": 0,
+    "baseline_prob": 0.004176,
+    "balanced_prob": 0.00054
+  },
+  {
+    "cohort": "shared_tn",
+    "filename": "Nvia113848_mb_mb_lccout.oas.gds.png",
+    "index": 7217,
+    "ground_truth": 0,
+    "baseline_prob": 0.008918,
+    "balanced_prob": 0.037057
+  },
+  {
+    "cohort": "shared_fp",
+    "filename": "Nvia79199_mb_mb_lccout.oas.gds.png",
+    "index": 4037,
+    "ground_truth": 0,
+    "baseline_prob": 0.087191,
+    "balanced_prob": 0.962354
+  },
+  {
+    "cohort": "shared_fp",
+    "filename": "Nvia121628_mb_mb_lccout.oas.gds.png",
+    "index": 8553,
+    "ground_truth": 0,
+    "baseline_prob": 0.572065,
+    "balanced_prob": 0.970151
+  },
+  {
+    "cohort": "shared_fp",
+    "filename": "Nvia73785_mb_mb_lccout.oas.gds.png",
+    "index": 10681,
+    "ground_truth": 0,
+    "baseline_prob": 0.14104,
+    "balanced_prob": 0.979441
+  },
+  {
+    "cohort": "shared_fp",
+    "filename": "Nvia104403_mb_mb_lccout.oas.gds.png",
+    "index": 9667,
+    "ground_truth": 0,
+    "baseline_prob": 0.176927,
+    "balanced_prob": 0.828986
+  },
+  {
+    "cohort": "shared_fp",
+    "filename": "Nvia22799_mb_mb_lccout.oas.gds.png",
+    "index": 6364,
+    "ground_truth": 0,
+    "baseline_prob": 0.358069,
+    "balanced_prob": 0.939072
+  }
+]

@@ -1,0 +1,12 @@
+test_degenerate_maps_have_null_not_fake_zero (__main__.AgreementTests.test_degenerate_maps_have_null_not_fake_zero) ... ok
+test_disjoint_support_zero_overlap_but_undefined_intersection (__main__.AgreementTests.test_disjoint_support_zero_overlap_but_undefined_intersection) ... ok
+test_identical_nonconstant_maps (__main__.AgreementTests.test_identical_nonconstant_maps) ... ok
+test_invalid_input_rejected (__main__.AgreementTests.test_invalid_input_rejected) ... ok
+test_rank_invariant_under_monotonic_change (__main__.AgreementTests.test_rank_invariant_under_monotonic_change) ... ok
+test_repository_audit_counts (__main__.AgreementTests.test_repository_audit_counts) ... ok
+test_ties_expand_without_arbitrary_index_selection (__main__.AgreementTests.test_ties_expand_without_arbitrary_index_selection) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.420s
+
+OK

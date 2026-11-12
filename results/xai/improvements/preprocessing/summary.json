@@ -1,0 +1,19 @@
+{
+  "n": 1219,
+  "seed": 1729,
+  "selection": "First min(64,N) SHA256(seed|relative path) per benchmark/split/class; no inference selection",
+  "official": "Keras RGB, 224x224, explicit nearest, img_to_array float32, ImageDataGenerator standardize rescale1/255",
+  "corrected": "XAIEngine explicit Pillow nearest; existing float32 division normalization",
+  "legacy": "Pillow RGB bicubic; float32 division normalization",
+  "corrected_max_abs": 0.0,
+  "corrected_mean_abs": 0.0,
+  "corrected_unequal_images": 0,
+  "legacy_max_abs": 0.9019607901573181,
+  "legacy_mean_abs": 0.013412145097559898,
+  "legacy_unequal_images": 1214,
+  "prediction_validation_status": "NOT_MEASURED_GPU_UNAVAILABLE",
+  "probability_max_difference": null,
+  "probability_mean_difference": null,
+  "classification_disagreements": null,
+  "limitations": "Tensor equality tested on binary dataset rasters only; does not validate arbitrary nonbinary array normalization or cached bicubic inputs. No CNN created, no GPU inference claimed."
+}

@@ -114,19 +114,24 @@ class OcclusionSensitivity:
         win_h, win_w = self.window_size
         str_y, str_x = self.stride
 
-        y_coords = list(range(0, height - win_h + 1, str_y))
-        x_coords = list(range(0, width - win_w + 1, str_x))
+        if height <= win_h:
+            y_coords = [0]
+        else:
+            y_coords = list(range(0, height - win_h + 1, str_y))
+            if y_coords and y_coords[-1] + win_h < height:
+                y_coords.append(height - win_h)
 
-        # Ensure right and bottom borders are fully covered
-        if y_coords[-1] + win_h < height:
-            y_coords.append(height - win_h)
-        if x_coords[-1] + win_w < width:
-            x_coords.append(width - win_w)
+        if width <= win_w:
+            x_coords = [0]
+        else:
+            x_coords = list(range(0, width - win_w + 1, str_x))
+            if x_coords and x_coords[-1] + win_w < width:
+                x_coords.append(width - win_w)
 
         coords = []
         for y in y_coords:
             for x in x_coords:
-                coords.append((y, x, y + win_h, x + win_w))
+                coords.append((y, x, min(height, y + win_h), min(width, x + win_w)))
         return coords
 
     def explain(
@@ -152,8 +157,7 @@ class OcclusionSensitivity:
 
         # Compute original baseline score (pre-sigmoid logit)
         _, penult_orig, _ = self.engine.sub_model(img_tensor, training=False)
-        orig_logit_nhs = float(get_pre_sigmoid_logit(self.model, penult_orig)[0])
-        orig_score = -orig_logit_nhs if target_idx == 0 else orig_logit_nhs
+        orig_score = float(self.engine._compute_target_score(penult_orig, target_idx)[0])
 
         H, W = img_tensor.shape[1], img_tensor.shape[2]
         windows = self._generate_window_coordinates(H, W)
@@ -173,8 +177,7 @@ class OcclusionSensitivity:
         for i in range(0, num_windows, self.batch_size):
             chunk = batch_arr[i : i + self.batch_size]
             _, penult_chunk, _ = self.engine.sub_model(chunk, training=False)
-            chunk_logits = get_pre_sigmoid_logit(self.model, penult_chunk).numpy()
-            chunk_scores = -chunk_logits if target_idx == 0 else chunk_logits
+            chunk_scores = self.engine._compute_target_score(penult_chunk, target_idx).numpy()
             all_occ_scores.append(chunk_scores)
 
         occ_scores = np.concatenate(all_occ_scores, axis=0)
